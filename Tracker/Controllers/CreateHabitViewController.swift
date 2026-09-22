@@ -12,7 +12,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
     private let options = ["Категория", "Расписание"]
     
     //MARK: UI-elements
-    let tableView: UITableView = {
+    private lazy var tableView: UITableView = {
         let table = UITableView(frame: .zero, style: .insetGrouped)
         table.translatesAutoresizingMaskIntoConstraints = false
         table.backgroundColor = .clear
@@ -20,7 +20,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         return table
     }()
     
-    let titleLabel: UILabel = {
+   private  lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 16, weight: .medium)
@@ -30,7 +30,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         return label
     }()
     
-    let textField: UITextField = {
+    private  lazy var textField: UITextField = {
         let text = UITextField()
         text.translatesAutoresizingMaskIntoConstraints = false
         text.layer.cornerRadius = 16
@@ -42,7 +42,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         return text
     }()
     
-    let cancelButton: UIButton = {
+    private  lazy var cancelButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.cornerRadius = 16
@@ -55,7 +55,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         return button
     }()
     
-    let createButton: UIButton = {
+    private  lazy var createButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.cornerRadius = 16
@@ -137,7 +137,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         name: titleText,
         color: "ColorSection2",
         emoji: "😎",
-        shedule: selectedDays
+        schedule: selectedDays
     )
        delegate?.didCreateTracker(newTracker)
        dismiss(animated: true)

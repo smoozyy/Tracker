@@ -69,7 +69,7 @@ final class TrackerCell: UICollectionViewCell {
         button.layer.masksToBounds = true
         button.tintColor = .whiteDay
         let plus = UIImage.SymbolConfiguration(pointSize: 11, weight: .bold)
-        let image = UIImage(systemName: "plus", withConfiguration: plus)
+        let image = UIImage(systemName: SystemImages.System.plus, withConfiguration: plus)
         button.setImage(image, for: .normal)
         
         return button
@@ -81,9 +81,9 @@ final class TrackerCell: UICollectionViewCell {
         setupView()
         setupConstraint()
     }
-    
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        nil
     }
     
     //MARK: Private methods
@@ -131,7 +131,7 @@ final class TrackerCell: UICollectionViewCell {
     
     func configure(isCompleted: Bool, completedDays: Int, tracker: Tracker){
         countLabel.text = "\(completedDays) дней"
-        let image = isCompleted ? "checkmark" : "plus"
+        let image = isCompleted ? SystemImages.System.checkmark : SystemImages.System.plus
         let config = UIImage.SymbolConfiguration(pointSize: 11, weight: .bold)
         let imageName = UIImage(systemName: image, withConfiguration: config)
         plusButton.setImage(UIImage(systemName: image), for: .normal)

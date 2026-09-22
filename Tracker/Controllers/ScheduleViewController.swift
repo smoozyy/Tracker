@@ -18,7 +18,7 @@ final class ScheduleViewController: UIViewController {
     private var selectedDays: [WeekDay] = []
     
     //MARK: UI-elements
-    private let tableView: UITableView = {
+    private lazy var tableView: UITableView = {
         let table = UITableView(frame: .zero, style: .insetGrouped)
         table.translatesAutoresizingMaskIntoConstraints = false
         table.isScrollEnabled = false
@@ -26,7 +26,7 @@ final class ScheduleViewController: UIViewController {
         return table
     }()
     
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 16, weight: .medium)
@@ -36,7 +36,7 @@ final class ScheduleViewController: UIViewController {
         
     }()
     
-    private let completeButton: UIButton = {
+    private lazy var completeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.cornerRadius = 16
@@ -60,7 +60,7 @@ final class ScheduleViewController: UIViewController {
         setUpConstraints()
     }
     
-    //Private methods
+    //MARK: Private methods
     private func setUpViews() {
         view.addSubview(tableView)
         view.addSubview(titleLabel)

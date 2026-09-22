@@ -9,14 +9,14 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     var completedTrackers: [TrackerRecord] = []
 
     //MARK: UI-Elements
-    private let plusButton: UIButton = {
+    private lazy var plusButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(resource: .plusButton), for: .normal)
         return button
     }()
     
-    private let trackerLabel: UILabel = {
+    private lazy var trackerLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Трекеры"
@@ -25,7 +25,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         return label
     }()
     
-    private let searchField: UISearchTextField = {
+    private lazy var searchField: UISearchTextField = {
         let textField = UISearchTextField()
         let searchBarIcon = UIImageView(image: UIImage(resource: .searchIcon))
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -36,7 +36,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         return textField
     }()
     
-    private let datePicker: UIDatePicker = {
+    private lazy var datePicker: UIDatePicker = {
         let datePicker = UIDatePicker()
         datePicker.translatesAutoresizingMaskIntoConstraints = false
         datePicker.datePickerMode = .date
@@ -45,13 +45,13 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         return datePicker
     }()
     
-    private let starImage: UIImageView = {
+    private lazy var starImage: UIImageView = {
         let image = UIImageView(image: UIImage(resource: .star))
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
     }()
     
-    private let questionLabel: UILabel = {
+    private lazy var questionLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Что будем отслеживать?"
@@ -70,7 +70,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         collectionView.dataSource = self
         collectionView.delegate = self
         
-        let mockTracker = Tracker(id: UUID(), name: "ТЕСТ", color: "ColorSection1" , emoji: "😩", shedule: [.monday, .tuersday, .wednesday, .thursday, .friday, .saturday, .sunday])
+        let mockTracker = Tracker(id: UUID(), name: "ТЕСТ", color: "ColorSection1" , emoji: "😩", schedule: [.monday, .tuersday, .wednesday, .thursday, .friday, .saturday, .sunday])
         categories = [TrackerCategory(title: "Домашний уют", trackers: [mockTracker])
         ]
         collectionView.reloadData()
@@ -236,9 +236,7 @@ extension TrackerViewController: TrackerCellDelegate {
         let calendar = Calendar.current
         let currentDate = calendar.startOfDay(for: Date())
         let pickerDate = calendar.startOfDay(for: datePicker.date)
-        if currentDate < pickerDate {
-            return
-        }
+        guard pickerDate > currentDate else { return }
         if let index = completedTrackers.firstIndex(where: { $0.trackerId == choosenTracker.id && Calendar.current.isDate($0.date, inSameDayAs: pickerDate) }) {
             completedTrackers.remove(at: index)
             print("удаляем рекорд")
