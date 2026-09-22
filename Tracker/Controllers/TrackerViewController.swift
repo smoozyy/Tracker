@@ -1,6 +1,6 @@
 import UIKit
 
-class TrackerViewController: UIViewController {
+final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     
     //MARK: Properties
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
@@ -138,6 +138,21 @@ class TrackerViewController: UIViewController {
         collectionView.isHidden = isNoTrackers
     }
     
+    //MARK: Methods
+    func didCreateTracker(_ tracker: Tracker) {
+        if !categories.isEmpty{
+            var updatedTrackers = categories[0].trackers
+            updatedTrackers.append(tracker)
+            categories[0] = TrackerCategory(title: categories[0].title, trackers: updatedTrackers)
+        } else {
+            let newCategory = TrackerCategory(title: "Новый день", trackers: [tracker])
+            categories.append(newCategory)
+        }
+        
+        updatePlaceholder()
+        collectionView.reloadData()
+    }
+    
     //MARK: Objc methods
     
     @objc func datePickerValueChanged(_ sender: UIDatePicker) {
@@ -149,7 +164,8 @@ class TrackerViewController: UIViewController {
     }
     
     @objc private func didTapPlusButton() {
-        let createHabbitVC = CreateHabbitViewController()
+        let createHabbitVC = CreateHabitViewController()
+        createHabbitVC.delegate = self
         let navController = UINavigationController(rootViewController: createHabbitVC)
         present(navController, animated: true)
     }

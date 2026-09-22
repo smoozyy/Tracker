@@ -1,8 +1,13 @@
 import UIKit
 
+protocol CreateHabitViewDelegate: AnyObject {
+    func didCreateTracker(_ tracker: Tracker)
+}
+
 final class CreateHabitViewController: UIViewController, ScheduleViewControllerDelegate {
     
     //MARK: Properties
+    weak var delegate: CreateHabitViewDelegate?
     private var selectedDays:[WeekDay] = []
     private let options = ["Категория", "Расписание"]
     
@@ -86,6 +91,8 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         view.addSubview(cancelButton)
         view.addSubview(createButton)
         view.addSubview(tableView)
+        createButton.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
+        cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
     }
     
     private func constraintsActivate() {
@@ -115,6 +122,25 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
             tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0),
             tableView.heightAnchor.constraint(equalToConstant: 150)
         ])
+    }
+    
+    //MARK: Objc private methods
+    @objc private func cancelButtonTapped() {
+        dismiss(animated: true)
+    }
+    
+   @objc private func createButtonTapped() {
+       guard let titleText = textField.text, !titleText.isEmpty else { return }
+       
+       let newTracker = Tracker(
+        id: UUID(),
+        name: titleText,
+        color: "ColorSection2",
+        emoji: "😎",
+        shedule: selectedDays
+    )
+       delegate?.didCreateTracker(newTracker)
+       dismiss(animated: true)
     }
     
 }
