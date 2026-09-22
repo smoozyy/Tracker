@@ -1,13 +1,13 @@
 import UIKit
 
-protocol SheduleViewControllerDelegate: AnyObject {
+protocol ScheduleViewControllerDelegate: AnyObject {
     func didTapCompleteButton(_ days: [WeekDay])
 }
 
-final class SheduleViewController: UIViewController {
+final class ScheduleViewController: UIViewController {
     
     //MARK: Properties
-    weak var delegate: SheduleViewControllerDelegate?
+    weak var delegate: ScheduleViewControllerDelegate?
     private let options = ["Понедельник",
                            "Вторник",
                            "Среда",
@@ -107,7 +107,7 @@ final class SheduleViewController: UIViewController {
 
 }
 
-extension SheduleViewController: UITableViewDataSource {
+extension ScheduleViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return options.count
     }
@@ -127,7 +127,7 @@ extension SheduleViewController: UITableViewDataSource {
     }
 }
 
-extension SheduleViewController: UITableViewDelegate {
+extension ScheduleViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
     }

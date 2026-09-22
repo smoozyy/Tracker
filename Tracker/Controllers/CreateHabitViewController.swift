@@ -1,6 +1,6 @@
 import UIKit
 
-final class CreateHabbitViewController: UIViewController, SheduleViewControllerDelegate {
+final class CreateHabitViewController: UIViewController, ScheduleViewControllerDelegate {
     
     //MARK: Properties
     private var selectedDays:[WeekDay] = []
@@ -119,7 +119,7 @@ final class CreateHabbitViewController: UIViewController, SheduleViewControllerD
     
 }
 
-extension CreateHabbitViewController: UITableViewDataSource {
+extension CreateHabitViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return options.count
     }
@@ -134,7 +134,7 @@ extension CreateHabbitViewController: UITableViewDataSource {
     }
 }
 
-extension CreateHabbitViewController: UITableViewDelegate {
+extension CreateHabitViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return .leastNormalMagnitude
@@ -150,9 +150,9 @@ extension CreateHabbitViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 1 {
-            let sheduleVC = SheduleViewController()
-            sheduleVC.delegate = self
-            navigationController?.pushViewController(sheduleVC, animated: true)
+            let scheduleVC = ScheduleViewController()
+            scheduleVC.delegate = self
+            navigationController?.pushViewController(scheduleVC, animated: true)
         }
     }
 }
