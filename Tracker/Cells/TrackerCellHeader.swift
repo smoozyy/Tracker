@@ -5,7 +5,7 @@ final class TrackerCellHeader: UICollectionReusableView  {
     static let identifier = "HeaderView"
     
     //MARK: UI-elemets
-    let titleLabel: UILabel = {
+    lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 19, weight: .bold)

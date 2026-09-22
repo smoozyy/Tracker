@@ -14,7 +14,7 @@ final class TrackerCell: UICollectionViewCell {
     //MARK: Properties
     
     //MARK: UI-elements
-    private let cardView: UIView = {
+    private lazy var cardView: UIView = {
         let card = UIView()
         card.translatesAutoresizingMaskIntoConstraints = false
         card.layer.cornerRadius = 16
@@ -25,7 +25,7 @@ final class TrackerCell: UICollectionViewCell {
         return card
     }()
     
-    private let emojiContainerView: UIView = {
+    private lazy var emojiContainerView: UIView = {
         let emoji = UIView()
         emoji.translatesAutoresizingMaskIntoConstraints = false
         emoji.backgroundColor = UIColor(resource: .emojiContainer)
@@ -33,7 +33,7 @@ final class TrackerCell: UICollectionViewCell {
         return emoji
     }()
     
-    private let emojiLabel: UILabel = {
+    private lazy var emojiLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 16)
@@ -42,7 +42,7 @@ final class TrackerCell: UICollectionViewCell {
         return label
     }()
     
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .medium)
@@ -52,7 +52,7 @@ final class TrackerCell: UICollectionViewCell {
         return label
     }()
     
-    private let countLabel: UILabel = {
+    private lazy var countLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .medium)
@@ -61,7 +61,7 @@ final class TrackerCell: UICollectionViewCell {
         return label
     }()
     
-    private let plusButton: UIButton = {
+    private lazy var plusButton: UIButton = {
         let button = UIButton(type: .custom)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = UIColor(resource: .colorSection5)
@@ -130,7 +130,9 @@ final class TrackerCell: UICollectionViewCell {
     }
     
     func configure(isCompleted: Bool, completedDays: Int, tracker: Tracker){
-        countLabel.text = "\(completedDays) дней"
+        emojiLabel.text = tracker.emoji
+        titleLabel.text = tracker.name
+        countLabel.text = completedDays.daysString()
         let image = isCompleted ? SystemImages.System.checkmark : SystemImages.System.plus
         let config = UIImage.SymbolConfiguration(pointSize: 11, weight: .bold)
         let imageName = UIImage(systemName: image, withConfiguration: config)

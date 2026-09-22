@@ -236,7 +236,7 @@ extension TrackerViewController: TrackerCellDelegate {
         let calendar = Calendar.current
         let currentDate = calendar.startOfDay(for: Date())
         let pickerDate = calendar.startOfDay(for: datePicker.date)
-        guard pickerDate > currentDate else { return }
+        guard pickerDate <= currentDate else { return }
         if let index = completedTrackers.firstIndex(where: { $0.trackerId == choosenTracker.id && Calendar.current.isDate($0.date, inSameDayAs: pickerDate) }) {
             completedTrackers.remove(at: index)
             print("удаляем рекорд")
