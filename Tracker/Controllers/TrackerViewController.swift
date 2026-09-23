@@ -70,7 +70,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         collectionView.dataSource = self
         collectionView.delegate = self
         
-        let mockTracker = Tracker(id: UUID(), name: "ТЕСТ", color: "ColorSection1" , emoji: "😩", schedule: [.monday, .tuersday, .wednesday, .thursday, .friday, .saturday, .sunday])
+        let mockTracker = Tracker(id: UUID(), name: "ТЕСТ", color: "ColorSection1" , emoji: "😩", schedule: [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday])
         categories = [TrackerCategory(title: "Домашний уют", trackers: [mockTracker])
         ]
         collectionView.reloadData()
