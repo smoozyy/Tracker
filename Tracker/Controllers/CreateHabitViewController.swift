@@ -7,6 +7,7 @@ protocol CreateHabitViewDelegate: AnyObject {
 final class CreateHabitViewController: UIViewController, ScheduleViewControllerDelegate {
     
     //MARK: Properties
+    private var scheduleSubtitle: String?
     weak var delegate: CreateHabitViewDelegate?
     private var selectedDays:[WeekDay] = []
     private let options = ["Категория", "Расписание"]
@@ -81,6 +82,12 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
     //MARK: Methods
     func didTapCompleteButton(_ days: [WeekDay]) {
         self.selectedDays = days
+        
+        if days.count == 7 {
+            scheduleSubtitle = "Каждый день"
+        } else {
+            scheduleSubtitle = days.map { $0.shortName }.joined(separator: ", ")
+        }
         tableView.reloadData()
     }
     
