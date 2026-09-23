@@ -6,12 +6,13 @@ protocol CreateHabitViewDelegate: AnyObject {
 
 final class CreateHabitViewController: UIViewController, ScheduleViewControllerDelegate {
     
-    //MARK: Properties
+    //MARK: - Properties
     weak var delegate: CreateHabitViewDelegate?
     private var selectedDays:[WeekDay] = []
     private let options = ["Категория", "Расписание"]
+    private let emojiArray = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝️", "😪"]
     
-    //MARK: UI-elements
+    //MARK: - UI-elements
     private lazy var tableView: UITableView = {
         let table = UITableView(frame: .zero, style: .insetGrouped)
         table.translatesAutoresizingMaskIntoConstraints = false
@@ -67,7 +68,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
     }()
     
     
-    //MARK: ViewDidLoad
+    //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(resource: .whiteDay)
