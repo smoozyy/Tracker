@@ -6,13 +6,15 @@ protocol CreateHabitViewDelegate: AnyObject {
 
 final class CreateHabitViewController: UIViewController, ScheduleViewControllerDelegate {
     
-    //MARK: Properties
+    //MARK: - Properties
     private var scheduleSubtitle: String?
+    let habitCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     weak var delegate: CreateHabitViewDelegate?
-    private var selectedDays:[WeekDay] = []
+    private var selectedDays: [WeekDay] = []
     private let options = ["Категория", "Расписание"]
     
-    //MARK: UI-elements
+    
+    //MARK: - UI-elements
     private lazy var tableView: UITableView = {
         let table = UITableView(frame: .zero, style: .insetGrouped)
         table.translatesAutoresizingMaskIntoConstraints = false
@@ -21,7 +23,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         return table
     }()
     
-   private  lazy var titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 16, weight: .medium)
@@ -31,7 +33,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         return label
     }()
     
-    private  lazy var textField: UITextField = {
+    private lazy var textField: UITextField = {
         let text = UITextField()
         text.translatesAutoresizingMaskIntoConstraints = false
         text.layer.cornerRadius = 16
@@ -43,7 +45,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         return text
     }()
     
-    private  lazy var cancelButton: UIButton = {
+    private lazy var cancelButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.cornerRadius = 16
@@ -56,24 +58,26 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         return button
     }()
     
-    private  lazy var createButton: UIButton = {
+    private lazy var createButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.cornerRadius = 16
-        button.backgroundColor = UIColor(resource: .gray)
+        button.backgroundColor = UIColor(resource: .GRAY)
         button.tintColor = UIColor(resource: .whiteDay)
         button.setTitle("Создать", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         return button
     }()
     
-    
-    //MARK: ViewDidLoad
+    //MARK: - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(resource: .whiteDay)
         tableView.dataSource = self
         tableView.delegate = self
+        habitCollectionView.register(HabitCell.self, forCellWithReuseIdentifier: HabitCell.habitIdentifier)
+        habitCollectionView.dataSource = self
+        habitCollectionView.delegate = self
         
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         updateCreateButtonStyle()
@@ -81,7 +85,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         constraintsActivate()
     }
     
-    //MARK: Methods
+    //MARK: - Methods
     func didTapCompleteButton(_ days: [WeekDay]) {
         self.selectedDays = days
         updateCreateButtonStyle()
@@ -93,7 +97,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         tableView.reloadData()
     }
     
-    //MARK: Private Methods
+    //MARK: - Private Methods
     private func updateCreateButtonStyle() {
         let hasText = !(textField.text?.isEmpty ?? true)
         let hasSchedule = !selectedDays.isEmpty
@@ -103,7 +107,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
             createButton.backgroundColor = UIColor(resource: .blackDay)
         } else {
             createButton.isEnabled = false
-            createButton.backgroundColor = UIColor(resource: .gray)
+            createButton.backgroundColor = UIColor(resource: .GRAY)
         }
     }
     
@@ -146,28 +150,46 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         ])
     }
     
-    //MARK: Objc private methods
+    //MARK: - Objc private methods
     @objc private func cancelButtonTapped() {
         dismiss(animated: true)
     }
     
-   @objc private func createButtonTapped() {
-       guard let titleText = textField.text, !titleText.isEmpty else { return }
-       
-       let newTracker = Tracker(
-        id: UUID(),
-        name: titleText,
-        color: "ColorSection2",
-        emoji: "😎",
-        schedule: selectedDays
-    )
-       delegate?.didCreateTracker(newTracker)
-       dismiss(animated: true)
+    @objc private func createButtonTapped() {
+        guard let titleText = textField.text, !titleText.isEmpty else { return }
+        
+        let newTracker = Tracker(
+            id: UUID(),
+            name: titleText,
+            color: "ColorSection2",
+            emoji: "😎",
+            schedule: selectedDays
+        )
+        delegate?.didCreateTracker(newTracker)
+        dismiss(animated: true)
     }
     
     @objc private func textFieldDidChange() {
         updateCreateButtonStyle()
     }
+}
+
+//MARK: - Extensions
+
+extension CreateHabitViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let habitCell = collectionView.dequeueReusableCell(withReuseIdentifier: HabitCell.habitIdentifier, for: indexPath) as? HabitCell else {
+            return UICollectionViewCell()
+        }
+        return habitCell
+    }
+}
+
+extension CreateHabitViewController: UICollectionViewDelegateFlowLayout {
     
 }
 
@@ -181,12 +203,11 @@ extension CreateHabitViewController: UITableViewDataSource {
         
         cell.textLabel?.text = options[indexPath.row]
         cell.backgroundColor = UIColor(resource: .backgroundDay)
-        cell.accessoryType = .disclosureIndicator  ///иконка стрелочки в правой части
+        cell.accessoryType = .disclosureIndicator
         cell.selectionStyle = .none
         
         if indexPath.row == 0 {
             cell.detailTextLabel?.text = nil
-            //TODO: add array for categories
         } else if indexPath.row == 1 {
             cell.detailTextLabel?.text = scheduleSubtitle
             cell.detailTextLabel?.textColor = .gray

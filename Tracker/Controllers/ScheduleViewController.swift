@@ -6,7 +6,7 @@ protocol ScheduleViewControllerDelegate: AnyObject {
 
 final class ScheduleViewController: UIViewController {
     
-    //MARK: Properties
+    //MARK: - Properties
     weak var delegate: ScheduleViewControllerDelegate?
     private let options = ["Понедельник",
                            "Вторник",
@@ -17,7 +17,7 @@ final class ScheduleViewController: UIViewController {
                            "Воскресенье"]
     private var selectedDays: [WeekDay] = []
     
-    //MARK: UI-elements
+    //MARK: - UI-elements
     private lazy var tableView: UITableView = {
         let table = UITableView(frame: .zero, style: .insetGrouped)
         table.translatesAutoresizingMaskIntoConstraints = false
@@ -47,7 +47,7 @@ final class ScheduleViewController: UIViewController {
         return button
     }()
     
-    //MARK: ViewDidLoad
+    //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(resource: .whiteDay)
@@ -60,7 +60,7 @@ final class ScheduleViewController: UIViewController {
         setUpConstraints()
     }
     
-    //MARK: Private methods
+    //MARK: - Private methods
     private func setUpViews() {
         view.addSubview(tableView)
         view.addSubview(titleLabel)
@@ -87,7 +87,7 @@ final class ScheduleViewController: UIViewController {
         ])
     }
     
-    //MARK: Objc-methods
+    //MARK: - Objc-methods
     @objc private func switchChanged(_ sender: UISwitch) {
         let day = WeekDay.allCases[sender.tag]
         

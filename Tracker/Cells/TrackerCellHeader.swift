@@ -4,7 +4,7 @@ final class TrackerCellHeader: UICollectionReusableView  {
     
     static let identifier = "HeaderView"
     
-    //MARK: UI-elemets
+    //MARK: - UI-elemets
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -13,6 +13,7 @@ final class TrackerCellHeader: UICollectionReusableView  {
         return label
     }()
     
+    //MARK: - Init
     override init(frame: CGRect) {
         super .init(frame: frame)
         addSubview(titleLabel)

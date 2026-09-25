@@ -5,15 +5,13 @@ protocol TrackerCellDelegate: AnyObject {
 }
 
 final class TrackerCell: UICollectionViewCell {
-    //MARK: Static let
+    //MARK: - Static let
     static let identifier = "TrackerCell"
     
-    //MARK: Delegate
+    //MARK: - Delegate
     weak var delegate: TrackerCellDelegate?
     
-    //MARK: Properties
-    
-    //MARK: UI-elements
+    //MARK: - UI-elements
     private lazy var cardView: UIView = {
         let card = UIView()
         card.translatesAutoresizingMaskIntoConstraints = false
@@ -75,7 +73,7 @@ final class TrackerCell: UICollectionViewCell {
         return button
     }()
     
-    //MARK: Init
+    //MARK: - Init
     override init(frame: CGRect) {
         super .init(frame: frame)
         setupView()
@@ -86,7 +84,7 @@ final class TrackerCell: UICollectionViewCell {
         nil
     }
     
-    //MARK: Private methods
+    //MARK: - Private methods
     private func setupConstraint() {
         NSLayoutConstraint.activate([
             //CardView
