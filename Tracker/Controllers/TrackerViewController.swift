@@ -70,7 +70,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         collectionView.dataSource = self
         collectionView.delegate = self
         
-        let mockTracker = Tracker(id: UUID(), name: "ТЕСТ", color: "ColorSection1" , emoji: "😩", schedule: [.monday, .tuersday, .wednesday, .thursday, .friday, .saturday, .sunday])
+        let mockTracker = Tracker(id: UUID(), name: "ТЕСТ", color: "ColorSection1" , emoji: "😩", schedule: [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday])
         categories = [TrackerCategory(title: "Домашний уют", trackers: [mockTracker])
         ]
         collectionView.reloadData()
@@ -138,6 +138,14 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         collectionView.isHidden = isNoTrackers
     }
     
+    private func isTrackerCompletedToday(id: UUID) -> Bool {
+        let pickerDate = Calendar.current.startOfDay(for: datePicker.date)
+        return completedTrackers.contains { record in
+            record.trackerId == id && Calendar.current.isDate(record.date, inSameDayAs: pickerDate)
+        }
+    }
+
+    
     //MARK: Methods
     func didCreateTracker(_ tracker: Tracker) {
         if !categories.isEmpty{
@@ -161,6 +169,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         dateformatter.dateFormat = "dd.MM.yyyy"
         let formattedDate = dateformatter.string(from: selectedDate)
         print("Выбранная дата:\(formattedDate)")
+        collectionView.reloadData()
     }
     
     @objc private func didTapPlusButton() {
@@ -188,9 +197,7 @@ extension TrackerViewController: UICollectionViewDataSource {
         cell.delegate = self
         let tracker = categories[indexPath.section].trackers[indexPath.row]
         let pickerDate = Calendar.current.startOfDay(for: datePicker.date)
-        let isCompleted = completedTrackers.contains { record in
-            record.trackerId == tracker.id && Calendar.current.isDate(record.date, inSameDayAs: pickerDate)
-        }
+        let isCompleted = isTrackerCompletedToday(id: tracker.id)
         let completedDays = completedTrackers.filter { $0.trackerId == tracker.id }.count
         cell.configure(isCompleted: isCompleted, completedDays: completedDays, tracker: tracker)
         return cell

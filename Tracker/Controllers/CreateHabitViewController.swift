@@ -6,13 +6,13 @@ protocol CreateHabitViewDelegate: AnyObject {
 
 final class CreateHabitViewController: UIViewController, ScheduleViewControllerDelegate {
     
-    //MARK: - Properties
+    //MARK: Properties
+    private var scheduleSubtitle: String?
     weak var delegate: CreateHabitViewDelegate?
     private var selectedDays:[WeekDay] = []
     private let options = ["Категория", "Расписание"]
-    private let emojiArray = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝️", "😪"]
     
-    //MARK: - UI-elements
+    //MARK: UI-elements
     private lazy var tableView: UITableView = {
         let table = UITableView(frame: .zero, style: .insetGrouped)
         table.translatesAutoresizingMaskIntoConstraints = false
@@ -68,13 +68,15 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
     }()
     
     
-    //MARK: - Lifecycle
+    //MARK: ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(resource: .whiteDay)
         tableView.dataSource = self
         tableView.delegate = self
         
+        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        updateCreateButtonStyle()
         setUpViews()
         constraintsActivate()
     }
@@ -82,10 +84,29 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
     //MARK: Methods
     func didTapCompleteButton(_ days: [WeekDay]) {
         self.selectedDays = days
+        updateCreateButtonStyle()
+        if days.count == 7 {
+            scheduleSubtitle = "Каждый день"
+        } else {
+            scheduleSubtitle = days.map { $0.shortName }.joined(separator: ", ")
+        }
         tableView.reloadData()
     }
     
     //MARK: Private Methods
+    private func updateCreateButtonStyle() {
+        let hasText = !(textField.text?.isEmpty ?? true)
+        let hasSchedule = !selectedDays.isEmpty
+        
+        if hasText && hasSchedule {
+            createButton.isEnabled = true
+            createButton.backgroundColor = UIColor(resource: .blackDay)
+        } else {
+            createButton.isEnabled = false
+            createButton.backgroundColor = UIColor(resource: .gray)
+        }
+    }
+    
     private func setUpViews() {
         view.addSubview(titleLabel)
         view.addSubview(textField)
@@ -144,6 +165,10 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
        dismiss(animated: true)
     }
     
+    @objc private func textFieldDidChange() {
+        updateCreateButtonStyle()
+    }
+    
 }
 
 extension CreateHabitViewController: UITableViewDataSource {
@@ -153,10 +178,20 @@ extension CreateHabitViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle ,reuseIdentifier: "cell")
+        
         cell.textLabel?.text = options[indexPath.row]
         cell.backgroundColor = UIColor(resource: .backgroundDay)
         cell.accessoryType = .disclosureIndicator  ///иконка стрелочки в правой части
         cell.selectionStyle = .none
+        
+        if indexPath.row == 0 {
+            cell.detailTextLabel?.text = nil
+            //TODO: add array for categories
+        } else if indexPath.row == 1 {
+            cell.detailTextLabel?.text = scheduleSubtitle
+            cell.detailTextLabel?.textColor = .gray
+            cell.detailTextLabel?.font = .systemFont(ofSize: 16, weight: .regular)
+        }
         return cell
     }
 }
