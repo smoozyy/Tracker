@@ -175,6 +175,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     }
 }
 
+    //MARK: - UICollectionViewDataSource
 extension TrackerViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return categories.count
@@ -197,6 +198,7 @@ extension TrackerViewController: UICollectionViewDataSource {
     }
 }
 
+    //MARK: - UICollectionViewDelegateFlowLayout
 extension TrackerViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let availableWidth = collectionView.frame.width - params.paddingWidth
@@ -226,6 +228,7 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+    //MARK: - TrackerCellDelegate
 extension TrackerViewController: TrackerCellDelegate {
     func trackerCellDidTapPlus(_ cell: TrackerCell) {
         guard let indexPath = collectionView.indexPath(for: cell) else {
