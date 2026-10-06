@@ -6,7 +6,14 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3A4FC20430750B850013BBCA /* TrackerModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 3A4FC20230750B850013BBCA /* TrackerModel.xcdatamodeld */; };
+		3A4FC206307512630013BBCA /* DaysValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4FC205307512570013BBCA /* DaysValueTransformer.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		3A4FC20330750B850013BBCA /* TrackerModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TrackerModel.xcdatamodel; sourceTree = "<group>"; };
+		3A4FC205307512570013BBCA /* DaysValueTransformer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysValueTransformer.swift; sourceTree = "<group>"; };
 		3AD7D3183045C231000B7410 /* Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -45,6 +52,8 @@
 		3AD7D30F3045C231000B7410 = {
 			isa = PBXGroup;
 			children = (
+				3A4FC205307512570013BBCA /* DaysValueTransformer.swift */,
+				3A4FC20230750B850013BBCA /* TrackerModel.xcdatamodeld */,
 				3AD7D31A3045C231000B7410 /* Tracker */,
 				3AD7D3193045C231000B7410 /* Products */,
 			);
@@ -132,6 +141,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A4FC20430750B850013BBCA /* TrackerModel.xcdatamodeld in Sources */,
+				3A4FC206307512630013BBCA /* DaysValueTransformer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -345,6 +356,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		3A4FC20230750B850013BBCA /* TrackerModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				3A4FC20330750B850013BBCA /* TrackerModel.xcdatamodel */,
+			);
+			currentVersion = 3A4FC20330750B850013BBCA /* TrackerModel.xcdatamodel */;
+			path = TrackerModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 3AD7D3103045C231000B7410 /* Project object */;
 }
