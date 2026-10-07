@@ -1,12 +1,26 @@
 import UIKit
+import CoreData
 
 final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     
     //MARK: - Properties
+    private let context: NSManagedObjectContext
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     private let params = GeometricParams(cellCount: 2, leftInset: 16, rightInset: 16, cellSpacing: 9)
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
+    
+    //MARK: - Init
+    init(context: NSManagedObjectContext){
+        self.context = context
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder){
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
+    }
 
     //MARK: - UI-Elements
     private lazy var plusButton: UIButton = {
