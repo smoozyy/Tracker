@@ -1,10 +1,15 @@
-import UIKit
+//
+//  HabitCellHeader.swift
+//  Tracker
+//
+//  Created by Антон on 03.10.2026.
+//
 
-final class TrackerCellHeader: UICollectionReusableView  {
+import UIKit
+final class HabitEmojiHeader: UICollectionReusableView {
+    static let identifier = "emojiHeader"
     
-    static let identifier = "HeaderView"
-    
-    //MARK: - UI-elemets
+    //MARK: - UI-elements
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -28,5 +33,4 @@ final class TrackerCellHeader: UICollectionReusableView  {
     required init?(coder: NSCoder) {
         nil
     }
-    
 }

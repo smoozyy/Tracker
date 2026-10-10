@@ -3,13 +3,13 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
-    
+    private let coreDataStack = CoreDataStack()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
         window = UIWindow(windowScene: windowScene)
         
-        let trackersVC = TrackerViewController()
+        let trackersVC = TrackerViewController(context: coreDataStack.context)
         trackersVC.tabBarItem = UITabBarItem(
             title: "Трекеры",
             image: UIImage(resource: .recordCircle),

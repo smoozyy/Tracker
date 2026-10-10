@@ -1,14 +1,28 @@
 import UIKit
+import CoreData
 
 final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     
-    //MARK: Properties
+    //MARK: - Properties
+    private let context: NSManagedObjectContext
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     private let params = GeometricParams(cellCount: 2, leftInset: 16, rightInset: 16, cellSpacing: 9)
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
+    
+    //MARK: - Init
+    init(context: NSManagedObjectContext){
+        self.context = context
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder){
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
+    }
 
-    //MARK: UI-Elements
+    //MARK: - UI-Elements
     private lazy var plusButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -59,7 +73,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         return label
     }()
     
-    //MARK: Lifecycle
+    //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -71,18 +85,15 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         collectionView.delegate = self
         
         let mockTracker = Tracker(id: UUID(), name: "ТЕСТ", color: "ColorSection1" , emoji: "😩", schedule: [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday])
-        categories = [TrackerCategory(title: "Домашний уют", trackers: [mockTracker])
-        ]
+        categories = [TrackerCategory(title: "Домашний уют", trackers: [mockTracker])]
         collectionView.reloadData()
         updatePlaceholder()
-        
         
         setupViews()
         setupConstraints()
     }
         
-    //MARK: Private methods
-    
+    //MARK: - Private methods
     private func setupViews() {
         view.addSubview(trackerLabel)
         view.addSubview(plusButton)
@@ -145,10 +156,9 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         }
     }
 
-    
-    //MARK: Methods
+    //MARK: - Methods
     func didCreateTracker(_ tracker: Tracker) {
-        if !categories.isEmpty{
+        if !categories.isEmpty {
             var updatedTrackers = categories[0].trackers
             updatedTrackers.append(tracker)
             categories[0] = TrackerCategory(title: categories[0].title, trackers: updatedTrackers)
@@ -161,8 +171,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         collectionView.reloadData()
     }
     
-    //MARK: Objc methods
-    
+    //MARK: - Objc methods
     @objc func datePickerValueChanged(_ sender: UIDatePicker) {
         let selectedDate = sender.date
         let dateformatter = DateFormatter()
@@ -178,9 +187,9 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         let navController = UINavigationController(rootViewController: createHabbitVC)
         present(navController, animated: true)
     }
-
 }
 
+    //MARK: - UICollectionViewDataSource
 extension TrackerViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return categories.count
@@ -196,7 +205,6 @@ extension TrackerViewController: UICollectionViewDataSource {
         }
         cell.delegate = self
         let tracker = categories[indexPath.section].trackers[indexPath.row]
-        let pickerDate = Calendar.current.startOfDay(for: datePicker.date)
         let isCompleted = isTrackerCompletedToday(id: tracker.id)
         let completedDays = completedTrackers.filter { $0.trackerId == tracker.id }.count
         cell.configure(isCompleted: isCompleted, completedDays: completedDays, tracker: tracker)
@@ -204,6 +212,7 @@ extension TrackerViewController: UICollectionViewDataSource {
     }
 }
 
+    //MARK: - UICollectionViewDelegateFlowLayout
 extension TrackerViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let availableWidth = collectionView.frame.width - params.paddingWidth
@@ -233,6 +242,7 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+    //MARK: - TrackerCellDelegate
 extension TrackerViewController: TrackerCellDelegate {
     func trackerCellDidTapPlus(_ cell: TrackerCell) {
         guard let indexPath = collectionView.indexPath(for: cell) else {
