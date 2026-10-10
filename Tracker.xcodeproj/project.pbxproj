@@ -10,33 +10,9 @@
 		3AD7D3183045C231000B7410 /* Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		3A8AD7B53075429600CA380A /* Exceptions for "Tracker" folder in "Tracker" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				CoreData/TrackerModel.xcdatamodeld,
-			);
-			target = 3AD7D3173045C231000B7410 /* Tracker */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		3A8AD7B63075429600CA380A /* Exceptions for "Tracker" folder in "Compile Sources" phase from "Tracker" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = 3AD7D3143045C231000B7410 /* Sources */;
-			membershipExceptions = (
-				CoreData/TrackerModel.xcdatamodeld,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3AD7D31A3045C231000B7410 /* Tracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				3A8AD7B53075429600CA380A /* Exceptions for "Tracker" folder in "Tracker" target */,
-				3A8AD7B63075429600CA380A /* Exceptions for "Tracker" folder in "Compile Sources" phase from "Tracker" target */,
-			);
 			path = Tracker;
 			sourceTree = "<group>";
 		};
