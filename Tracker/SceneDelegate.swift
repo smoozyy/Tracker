@@ -9,7 +9,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
         window = UIWindow(windowScene: windowScene)
         
-        let trackersVC = TrackerViewController(context: coreDataStack.context)
+        let trackerStore = TrackerStore()
+        let trackersVC = TrackerViewController(trackerStore: trackerStore)
         trackersVC.tabBarItem = UITabBarItem(
             title: "Трекеры",
             image: UIImage(resource: .recordCircle),

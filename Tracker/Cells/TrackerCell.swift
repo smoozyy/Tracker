@@ -10,7 +10,7 @@ final class TrackerCell: UICollectionViewCell {
     
     //MARK: - Delegate
     weak var delegate: TrackerCellDelegate?
-    
+    private let uiColorMarshalling = UIColorMarshalling()
     //MARK: - UI-elements
     private lazy var cardView: UIView = {
         let card = UIView()
@@ -18,7 +18,6 @@ final class TrackerCell: UICollectionViewCell {
         card.layer.cornerRadius = 16
         card.layer.masksToBounds = true
         card.layer.borderWidth = 1
-        card.backgroundColor = UIColor(resource: .red)
         card.layer.borderColor = UIColor(resource: .borderCard).cgColor
         return card
     }()
@@ -35,7 +34,6 @@ final class TrackerCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 16)
-        label.text = "😘"
         label.textAlignment = .center
         return label
     }()
@@ -46,7 +44,6 @@ final class TrackerCell: UICollectionViewCell {
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = UIColor(resource: .ypWhite)
         label.numberOfLines = 2
-        label.text = "Поливаю растения"
         return label
     }()
     
@@ -128,13 +125,14 @@ final class TrackerCell: UICollectionViewCell {
     }
     
     func configure(isCompleted: Bool, completedDays: Int, tracker: Tracker){
+        cardView.backgroundColor = TrackerColor(rawValue: tracker.color)?.color
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.name
         countLabel.text = completedDays.daysString()
         let image = isCompleted ? SystemImages.System.checkmark : SystemImages.System.plus
         let config = UIImage.SymbolConfiguration(pointSize: 11, weight: .bold)
-        let imageName = UIImage(systemName: image, withConfiguration: config)
-        plusButton.setImage(UIImage(systemName: image), for: .normal)
+        let configuredImage = UIImage(systemName: image, withConfiguration: config)
+        plusButton.setImage(configuredImage, for: .normal)
         plusButton.alpha = isCompleted ? 0.5 : 1.0
     }
     

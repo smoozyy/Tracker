@@ -5,8 +5,13 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
+    lazy var trackerAppStore: TrackerStore = {
+        let trackerStore = TrackerStore()
+        return trackerStore
+    }()
+    
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer()
+        let container = NSPersistentContainer(name: "TrackerModel")
         container.loadPersistentStores { descriptionStore, error in
             if let error = error as NSError? {
                 assertionFailure("Unresolved error: [\(#file)], \(error)")

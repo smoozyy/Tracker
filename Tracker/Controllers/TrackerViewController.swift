@@ -1,27 +1,34 @@
 import UIKit
-import CoreData
 
 final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     
     //MARK: - Properties
-    private let context: NSManagedObjectContext
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     private let params = GeometricParams(cellCount: 2, leftInset: 16, rightInset: 16, cellSpacing: 9)
-    var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
-    
-    //MARK: - Init
-    init(context: NSManagedObjectContext){
-        self.context = context
+    private let trackerStore: TrackerStore
+
+    init(trackerStore: TrackerStore) {
+        self.trackerStore = trackerStore
         super.init(nibName: nil, bundle: nil)
     }
-    
-    @available(*, unavailable)
-    required init?(coder: NSCoder){
-        assertionFailure("init(coder:) has not been implemented")
-        return nil
+
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
+    private lazy var trackerProvider: TrackerProviderProtocol? = {
+        do {
+            let provider = try TrackerStoreProvider(trackerStore, delegate: self)
+            return provider
+        } catch {
+            print("Не удалось инициализировать провайдер: \(error)")
+            return nil
+        }
+    }()
+
+    
     //MARK: - UI-Elements
     private lazy var plusButton: UIButton = {
         let button = UIButton()
@@ -84,8 +91,6 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         collectionView.dataSource = self
         collectionView.delegate = self
         
-        let mockTracker = Tracker(id: UUID(), name: "ТЕСТ", color: "ColorSection1" , emoji: "😩", schedule: [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday])
-        categories = [TrackerCategory(title: "Домашний уют", trackers: [mockTracker])]
         collectionView.reloadData()
         updatePlaceholder()
         
@@ -142,12 +147,18 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     }
     
     private func updatePlaceholder() {
-        let isNoTrackers = categories.isEmpty || categories.allSatisfy { $0.trackers.isEmpty }
+        let sectionsCount = trackerProvider?.numberOfSections ?? 0
+        var totalItems = 0
+        for section in 0..<sectionsCount {
+            totalItems += trackerProvider?.numberOfRowsInSection(section) ?? 0
+        }
+        let isNoTrackers = totalItems == 0
         
         starImage.isHidden = !isNoTrackers
         questionLabel.isHidden = !isNoTrackers
         collectionView.isHidden = isNoTrackers
     }
+
     
     private func isTrackerCompletedToday(id: UUID) -> Bool {
         let pickerDate = Calendar.current.startOfDay(for: datePicker.date)
@@ -158,17 +169,11 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
 
     //MARK: - Methods
     func didCreateTracker(_ tracker: Tracker) {
-        if !categories.isEmpty {
-            var updatedTrackers = categories[0].trackers
-            updatedTrackers.append(tracker)
-            categories[0] = TrackerCategory(title: categories[0].title, trackers: updatedTrackers)
-        } else {
-            let newCategory = TrackerCategory(title: "Новый день", trackers: [tracker])
-            categories.append(newCategory)
+        do {
+            try trackerProvider?.addTracker(tracker)
+        } catch {
+            print("Не удалось добавить трекер: \(error)")
         }
-        
-        updatePlaceholder()
-        collectionView.reloadData()
     }
     
     //MARK: - Objc methods
@@ -192,22 +197,26 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     //MARK: - UICollectionViewDataSource
 extension TrackerViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return categories.count
+        trackerProvider?.numberOfSections ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return categories[section].trackers.count
+        trackerProvider?.numberOfRowsInSection(section) ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackerCell.identifier, for: indexPath) as? TrackerCell else {
             return UICollectionViewCell()
         }
-        cell.delegate = self
-        let tracker = categories[indexPath.section].trackers[indexPath.row]
+        
+        guard let tracker = trackerProvider?.object(at: indexPath) else {
+            return cell
+        }
+        
         let isCompleted = isTrackerCompletedToday(id: tracker.id)
         let completedDays = completedTrackers.filter { $0.trackerId == tracker.id }.count
         cell.configure(isCompleted: isCompleted, completedDays: completedDays, tracker: tracker)
+        cell.delegate = self
         return cell
     }
 }
@@ -245,10 +254,11 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
     //MARK: - TrackerCellDelegate
 extension TrackerViewController: TrackerCellDelegate {
     func trackerCellDidTapPlus(_ cell: TrackerCell) {
-        guard let indexPath = collectionView.indexPath(for: cell) else {
+        guard
+            let indexPath = collectionView.indexPath(for: cell),
+            let choosenTracker = trackerProvider?.object(at: indexPath) else {
             return
         }
-        let choosenTracker = categories[indexPath.section].trackers[indexPath.row]
         print("получаем трекер")
         let calendar = Calendar.current
         let currentDate = calendar.startOfDay(for: Date())
@@ -264,5 +274,21 @@ extension TrackerViewController: TrackerCellDelegate {
         }
         collectionView.reloadItems(at: [indexPath])
         print("перезагружаем ячейку")
+    }
+}
+
+// MARK: - TrackerProviderDelegate
+extension TrackerViewController: TrackerProviderDelegate {
+    func didUpdate(_ update: TrackerStoreUpdate) {
+        collectionView.performBatchUpdates({
+            if let insertedIndexes = update.insertedIndexes, !insertedIndexes.isEmpty {
+                collectionView.insertItems(at: insertedIndexes.map { IndexPath(item: $0, section: 0) })
+            }
+            if let deletedIndexes = update.deletedIndexes, !deletedIndexes.isEmpty {
+                collectionView.deleteItems(at: deletedIndexes.map { IndexPath(item: $0, section: 0) })
+            }
+        }, completion: nil)
+        
+        updatePlaceholder()
     }
 }
