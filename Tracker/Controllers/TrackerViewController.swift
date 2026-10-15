@@ -3,6 +3,7 @@ import UIKit
 final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     
     //MARK: - Properties
+    private let trackerRecordStore = TrackerRecordStore()
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     private let params = GeometricParams(cellCount: 2, leftInset: 16, rightInset: 16, cellSpacing: 9)
     var completedTrackers: [TrackerRecord] = []
@@ -84,6 +85,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        completedTrackers = (try? trackerRecordStore.fetchRecords()) ?? []
         view.backgroundColor = .white
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -260,21 +262,26 @@ extension TrackerViewController: TrackerCellDelegate {
             let choosenTracker = trackerProvider?.object(at: indexPath) else {
             return
         }
-        print("получаем трекер")
+        
         let calendar = Calendar.current
         let currentDate = calendar.startOfDay(for: Date())
         let pickerDate = calendar.startOfDay(for: datePicker.date)
         guard pickerDate <= currentDate else { return }
-        if let index = completedTrackers.firstIndex(where: { $0.trackerId == choosenTracker.id && Calendar.current.isDate($0.date, inSameDayAs: pickerDate) }) {
-            completedTrackers.remove(at: index)
-            print("удаляем рекорд")
-        } else {
-            let newRecord = TrackerRecord(trackerId: choosenTracker.id, date: pickerDate)
-            completedTrackers.append(newRecord)
-            print("добавляем новый рекорд")
+        
+        let record = TrackerRecord(trackerId: choosenTracker.id, date: pickerDate)
+        
+        do {
+            if let index = completedTrackers.firstIndex(where: { $0.trackerId == choosenTracker.id && calendar.isDate($0.date, inSameDayAs: pickerDate) }) {
+                completedTrackers.remove(at: index)
+                try trackerRecordStore.remove(record)
+            } else {
+                completedTrackers.append(record)
+                try trackerRecordStore.add(record)
+            }
+            collectionView.reloadItems(at: [indexPath])
+        } catch {
+            print("Ошибка обновления рекорда: \(error)")
         }
-        collectionView.reloadItems(at: [indexPath])
-        print("перезагружаем ячейку")
     }
 }
 
