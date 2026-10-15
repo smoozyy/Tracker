@@ -8,13 +8,6 @@ final class ScheduleViewController: UIViewController {
     
     //MARK: - Properties
     weak var delegate: ScheduleViewControllerDelegate?
-    private let options = ["Понедельник",
-                           "Вторник",
-                           "Среда",
-                           "Четверг",
-                           "Пятница",
-                           "Суббота",
-                           "Воскресенье"]
     private var selectedDays: [WeekDay] = []
     
     //MARK: - UI-elements
@@ -104,12 +97,12 @@ final class ScheduleViewController: UIViewController {
         delegate?.didTapCompleteButton(selectedDays)
         navigationController?.popViewController(animated: true)
     }
-
+    
 }
 
 extension ScheduleViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return options.count
+        return WeekDay.allCases.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -121,7 +114,8 @@ extension ScheduleViewController: UITableViewDataSource {
         switchView.addTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
         
         cell.accessoryView = switchView
-        cell.textLabel?.text = options[indexPath.row]
+        let day = WeekDay.allCases[indexPath.row]
+        cell.textLabel?.text = day.fullName
         cell.backgroundColor = UIColor(resource: .backgroundDay)
         return cell
     }
@@ -135,7 +129,7 @@ extension ScheduleViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return .leastNormalMagnitude
     }
-
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return UIView()
     }

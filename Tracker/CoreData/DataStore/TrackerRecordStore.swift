@@ -9,7 +9,7 @@ import UIKit
 import CoreData
 
 final class TrackerRecordStore {
-    var context: NSManagedObjectContext
+    let context: NSManagedObjectContext
     var trackerStore = TrackerStore()
     
     init(context: NSManagedObjectContext){
@@ -17,10 +17,7 @@ final class TrackerRecordStore {
     }
     
     convenience init() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            assertionFailure("Failed to convenience init [\(#file)]")
-        }
-        self.init(context: appDelegate.persistentContainer.viewContext)
+        self.init(context: CoreDataStack.shared.context)
     }
     
     func makeNewRecord(from recordCoreData: TrackerRecordCoreData) throws -> TrackerRecord {

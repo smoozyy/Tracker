@@ -26,7 +26,7 @@ final class HabitEmojiHeader: UICollectionReusableView {
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 28),
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16)
-            ])
+        ])
     }
     
     @available(*, unavailable)

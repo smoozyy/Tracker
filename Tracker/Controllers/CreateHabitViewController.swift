@@ -15,8 +15,8 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
     let habitCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     weak var delegate: CreateHabitViewDelegate?
     private var selectedDays: [WeekDay] = []
-    private let options = ["Категория", "Расписание"]
-    private let emojiArray = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝️", "😪"]
+    private let options = TrackerConstants.options
+    private let emojiArray = TrackerConstants.emojiArray
     //MARK: - UI-elements
     private lazy var tableView: UITableView = {
         let table = UITableView(frame: .zero, style: .insetGrouped)
@@ -176,9 +176,12 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
     }
     
     @objc private func createButtonTapped() {
-        guard let titleText = textField.text, !titleText.isEmpty else { return }
-        guard let selectedEmoji = selectedEmoji else {return}
-        guard let selectedColorIndex = selectedColorIndex else {return}
+        guard
+            let titleText = textField.text, !titleText.isEmpty,
+            let selectedEmoji = selectedEmoji,
+            let selectedColorIndex = selectedColorIndex else {
+            return
+        }
         let colorName = TrackerColor.allCases[selectedColorIndex].rawValue
         let newTracker = Tracker(
             id: UUID(),
@@ -190,7 +193,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         delegate?.didCreateTracker(newTracker)
         dismiss(animated: true)
     }
-
+    
     @objc private func textFieldDidChange() {
         updateCreateButtonStyle()
     }
@@ -200,15 +203,11 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
 extension CreateHabitViewController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 2
+        2
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if section == 0 {
-            return emojiArray.count
-        } else {
-            return TrackerColor.allCases.count
-        }
+        section == 0 ? emojiArray.count : TrackerColor.allCases.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -229,7 +228,7 @@ extension CreateHabitViewController: UICollectionViewDataSource {
     }
 }
 
-    //MARK: - UICollectionViewDelegateFlowLayout
+//MARK: - UICollectionViewDelegateFlowLayout
 extension CreateHabitViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(
         _ collectionView: UICollectionView,
@@ -276,16 +275,12 @@ extension CreateHabitViewController: UICollectionViewDelegateFlowLayout {
               let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HabitEmojiHeader.identifier, for: indexPath) as? HabitEmojiHeader else {
             return UICollectionReusableView()
         }
-        if indexPath.section == 0{
-            header.titleLabel.text = "Emoji"
-        } else {
-            header.titleLabel.text = "Цвет"
-        }
+        header.titleLabel.text = indexPath.section == 0 ? "Emoji" : "Цвет"
         return  header
     }
 }
 
-    //MARK: - UITableViewDataSource
+//MARK: - UITableViewDataSource
 extension CreateHabitViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return options.count
@@ -310,17 +305,17 @@ extension CreateHabitViewController: UITableViewDataSource {
     }
 }
 
-    //MARK: - UITableViewDelegate
+//MARK: - UITableViewDelegate
 extension CreateHabitViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return .leastNormalMagnitude
     }
-
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return UIView()
     }
-
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
     }

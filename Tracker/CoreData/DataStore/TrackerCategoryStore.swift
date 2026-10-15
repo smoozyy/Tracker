@@ -11,7 +11,7 @@ import CoreData
 final class TrackerCategoryStore {
     
     //MARK: - Properties
-    var context: NSManagedObjectContext
+    let context: NSManagedObjectContext
     var trackerStore = TrackerStore()
     
     //MARK: - Init
@@ -20,10 +20,7 @@ final class TrackerCategoryStore {
     }
     
     convenience init() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            assertionFailure("Failed to convenience init [\(#file)]")
-        }
-        self.init(context: appDelegate.persistentContainer.viewContext)
+        self.init(context: CoreDataStack.shared.context)
     }
     
     //MARK: - Methods

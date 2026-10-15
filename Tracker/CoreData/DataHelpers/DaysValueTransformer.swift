@@ -33,5 +33,5 @@ final class DaysValueTransformer: ValueTransformer {
     static func register() {
         ValueTransformer.setValueTransformer(DaysValueTransformer(), forName: NSValueTransformerName(rawValue: String(describing: DaysValueTransformer.self)))
     }
-        
+    
 }

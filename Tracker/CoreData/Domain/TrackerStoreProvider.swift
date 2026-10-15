@@ -22,7 +22,7 @@ protocol TrackerProviderProtocol {
 }
 
 protocol TrackerProviderDelegate: AnyObject {
-    func didUpdate(_ udpate: TrackerStoreUpdate)
+    func didUpdate(_ update: TrackerStoreUpdate)
 }
 
 final class TrackerStoreProvider: NSObject {
@@ -74,7 +74,7 @@ extension TrackerStoreProvider: TrackerProviderProtocol {
         let trackerCoreData = fetchedResultsController.object(at: indexPath)
         return try? trackerStore.makeTracker(from: trackerCoreData)
     }
-
+    
     func addTracker(_ tracker: Tracker) throws {
         try trackerStore.add(tracker)
     }
@@ -90,15 +90,22 @@ extension TrackerStoreProvider: NSFetchedResultsControllerDelegate {
         insertedIndexes = IndexSet()
         deletedIndexes = IndexSet()
     }
-
+    
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        guard
+            let insertedIndexes = self.insertedIndexes,
+            let deletedIndexes = self.deletedIndexes else {
+            return
+        }
+                
+        
         delegate?.didUpdate(TrackerStoreUpdate(
-                insertedIndexes: insertedIndexes!,
-                deletedIndexes: deletedIndexes!
-            )
+            insertedIndexes: insertedIndexes,
+            deletedIndexes: deletedIndexes
         )
-        insertedIndexes = nil
-        deletedIndexes = nil
+        )
+        self.insertedIndexes = nil
+        self.deletedIndexes = nil
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {

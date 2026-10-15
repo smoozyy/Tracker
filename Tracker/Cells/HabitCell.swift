@@ -39,49 +39,49 @@ final class HabitCell: UICollectionViewCell {
     }
     
     //MARK: - Methods
-        override func prepareForReuse() {
-            super.prepareForReuse()
-            contentView.backgroundColor = .clear
-            contentView.layer.borderWidth = 0
-            contentView.layer.borderColor = nil
-            contentView.layer.cornerRadius = 0
-            titleLabel.text = nil
-            titleLabel.isHidden = false
-            colorCollection.isHidden = true
-            colorCollection.backgroundColor = .clear
-        }
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        contentView.backgroundColor = .clear
+        contentView.layer.borderWidth = 0
+        contentView.layer.borderColor = nil
+        contentView.layer.cornerRadius = 0
+        titleLabel.text = nil
+        titleLabel.isHidden = false
+        colorCollection.isHidden = true
+        colorCollection.backgroundColor = .clear
+    }
+    
+    func configureEmoji(emojiTitleLabel: String, isSelectedEmoji: Bool) {
+        titleLabel.text = emojiTitleLabel
+        titleLabel.isHidden = false
+        colorCollection.isHidden = true
         
-        func configureEmoji(emojiTitleLabel: String, isSelectedEmoji: Bool) {
-            titleLabel.text = emojiTitleLabel
-            titleLabel.isHidden = false
-            colorCollection.isHidden = true
-            
-            contentView.layer.borderWidth = 0
-            
-            if isSelectedEmoji {
-                contentView.backgroundColor = UIColor(resource: .lightGray)
-                contentView.layer.cornerRadius = 16
-            } else {
-                contentView.backgroundColor = .clear
-            }
-        }
+        contentView.layer.borderWidth = 0
         
-        func configureColor(colorView: UIColor, isSelectedColor: Bool) {
-            titleLabel.isHidden = true
-            colorCollection.isHidden = false
-            colorCollection.backgroundColor = colorView
-            
+        if isSelectedEmoji {
+            contentView.backgroundColor = UIColor(resource: .lightGray)
+            contentView.layer.cornerRadius = 16
+        } else {
             contentView.backgroundColor = .clear
-            
-            if isSelectedColor {
-                contentView.layer.cornerRadius = 12
-                contentView.layer.borderWidth = 4
-                contentView.layer.borderColor = colorView.withAlphaComponent(0.3).cgColor
-            } else {
-                contentView.layer.borderWidth = 0
-            }
         }
-
+    }
+    
+    func configureColor(colorView: UIColor, isSelectedColor: Bool) {
+        titleLabel.isHidden = true
+        colorCollection.isHidden = false
+        colorCollection.backgroundColor = colorView
+        
+        contentView.backgroundColor = .clear
+        
+        if isSelectedColor {
+            contentView.layer.cornerRadius = 12
+            contentView.layer.borderWidth = 4
+            contentView.layer.borderColor = colorView.withAlphaComponent(0.3).cgColor
+        } else {
+            contentView.layer.borderWidth = 0
+        }
+    }
+    
     
     //MARK: - Private methods
     private func setUpViews() {
@@ -91,14 +91,14 @@ final class HabitCell: UICollectionViewCell {
     
     private func setUpConstraint() {
         NSLayoutConstraint.activate([
-        //TitleLabel
-        titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-        titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-        //ColorCollection
-        colorCollection.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-        colorCollection.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-        colorCollection.widthAnchor.constraint(equalToConstant: 40),
-        colorCollection.heightAnchor.constraint(equalToConstant: 40)
+            //TitleLabel
+            titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            //ColorCollection
+            colorCollection.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            colorCollection.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            colorCollection.widthAnchor.constraint(equalToConstant: 40),
+            colorCollection.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
 }

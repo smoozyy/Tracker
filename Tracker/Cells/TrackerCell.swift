@@ -10,7 +10,6 @@ final class TrackerCell: UICollectionViewCell {
     
     //MARK: - Delegate
     weak var delegate: TrackerCellDelegate?
-    private let uiColorMarshalling = UIColorMarshalling()
     //MARK: - UI-elements
     private lazy var cardView: UIView = {
         let card = UIView()
@@ -110,7 +109,7 @@ final class TrackerCell: UICollectionViewCell {
             plusButton.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -12),
             plusButton.widthAnchor.constraint(equalToConstant: 34),
             plusButton.heightAnchor.constraint(equalToConstant: 34)
-            ])
+        ])
     }
     
     private func setupView() {

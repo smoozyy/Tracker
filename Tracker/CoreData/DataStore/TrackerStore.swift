@@ -10,20 +10,15 @@ import CoreData
 
 final class TrackerStore {
     //MARK: - Properties
-    var context: NSManagedObjectContext
+    let context: NSManagedObjectContext
     let daysValueTransformer = DaysValueTransformer()
-    let coreDataStack = CoreDataStack()
-    
     //MARK: - Init
     init(context: NSManagedObjectContext) {
         self.context = context
     }
     
     convenience init() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            assertionFailure("Failed to convenience init [\(#file)]")
-        }
-        self.init(context: appDelegate.persistentContainer.viewContext)
+        self.init(context: CoreDataStack.shared.context)
     }
     
     //MARK: - Methods
@@ -59,7 +54,7 @@ final class TrackerStore {
             schedule: schedule
         )
     }
-
+    
     
     func addNewTracker(from tracker: Tracker) throws -> TrackerCoreData {
         let trackerCoreData = TrackerCoreData(context: context)

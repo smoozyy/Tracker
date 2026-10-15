@@ -10,6 +10,7 @@ import CoreData
 final class CoreDataStack {
     
     //MARK: - Properties
+    static let shared = CoreDataStack()
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "TrackerModel")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
@@ -23,6 +24,9 @@ final class CoreDataStack {
     var context: NSManagedObjectContext {
         persistentContainer.viewContext
     }
+    
+    //MARK: - Init
+    private init() {}
     
     //MARK: -Methods
     func saveContext() {

@@ -7,17 +7,18 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     private let params = GeometricParams(cellCount: 2, leftInset: 16, rightInset: 16, cellSpacing: 9)
     var completedTrackers: [TrackerRecord] = []
     private let trackerStore: TrackerStore
-
+    
     init(trackerStore: TrackerStore) {
         self.trackerStore = trackerStore
         super.init(nibName: nil, bundle: nil)
     }
-
-
+    
+    
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        nil
     }
-
+    
     private lazy var trackerProvider: TrackerProviderProtocol? = {
         do {
             let provider = try TrackerStoreProvider(trackerStore, delegate: self)
@@ -27,7 +28,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
             return nil
         }
     }()
-
+    
     
     //MARK: - UI-Elements
     private lazy var plusButton: UIButton = {
@@ -97,7 +98,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         setupViews()
         setupConstraints()
     }
-        
+    
     //MARK: - Private methods
     private func setupViews() {
         view.addSubview(trackerLabel)
@@ -158,7 +159,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         questionLabel.isHidden = !isNoTrackers
         collectionView.isHidden = isNoTrackers
     }
-
+    
     
     private func isTrackerCompletedToday(id: UUID) -> Bool {
         let pickerDate = Calendar.current.startOfDay(for: datePicker.date)
@@ -166,7 +167,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
             record.trackerId == id && Calendar.current.isDate(record.date, inSameDayAs: pickerDate)
         }
     }
-
+    
     //MARK: - Methods
     func didCreateTracker(_ tracker: Tracker) {
         do {
@@ -194,7 +195,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     }
 }
 
-    //MARK: - UICollectionViewDataSource
+//MARK: - UICollectionViewDataSource
 extension TrackerViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         trackerProvider?.numberOfSections ?? 0
@@ -221,7 +222,7 @@ extension TrackerViewController: UICollectionViewDataSource {
     }
 }
 
-    //MARK: - UICollectionViewDelegateFlowLayout
+//MARK: - UICollectionViewDelegateFlowLayout
 extension TrackerViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let availableWidth = collectionView.frame.width - params.paddingWidth
@@ -251,7 +252,7 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-    //MARK: - TrackerCellDelegate
+//MARK: - TrackerCellDelegate
 extension TrackerViewController: TrackerCellDelegate {
     func trackerCellDidTapPlus(_ cell: TrackerCell) {
         guard
