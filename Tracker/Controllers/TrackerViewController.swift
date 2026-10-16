@@ -2,13 +2,36 @@ import UIKit
 
 final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     
-    //MARK: Properties
+    //MARK: - Properties
+    private let trackerRecordStore = TrackerRecordStore()
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     private let params = GeometricParams(cellCount: 2, leftInset: 16, rightInset: 16, cellSpacing: 9)
-    var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
-
-    //MARK: UI-Elements
+    private let trackerStore: TrackerStore
+    
+    init(trackerStore: TrackerStore) {
+        self.trackerStore = trackerStore
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        nil
+    }
+    
+    private lazy var trackerProvider: TrackerProviderProtocol? = {
+        do {
+            let provider = try TrackerStoreProvider(trackerStore, delegate: self)
+            return provider
+        } catch {
+            print("Не удалось инициализировать провайдер: \(error)")
+            return nil
+        }
+    }()
+    
+    
+    //MARK: - UI-Elements
     private lazy var plusButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -59,9 +82,10 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         return label
     }()
     
-    //MARK: Lifecycle
+    //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        completedTrackers = (try? trackerRecordStore.fetchRecords()) ?? []
         view.backgroundColor = .white
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -70,19 +94,14 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         collectionView.dataSource = self
         collectionView.delegate = self
         
-        let mockTracker = Tracker(id: UUID(), name: "ТЕСТ", color: "ColorSection1" , emoji: "😩", schedule: [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday])
-        categories = [TrackerCategory(title: "Домашний уют", trackers: [mockTracker])
-        ]
         collectionView.reloadData()
         updatePlaceholder()
-        
         
         setupViews()
         setupConstraints()
     }
-        
-    //MARK: Private methods
     
+    //MARK: - Private methods
     private func setupViews() {
         view.addSubview(trackerLabel)
         view.addSubview(plusButton)
@@ -131,12 +150,18 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     }
     
     private func updatePlaceholder() {
-        let isNoTrackers = categories.isEmpty || categories.allSatisfy { $0.trackers.isEmpty }
+        let sectionsCount = trackerProvider?.numberOfSections ?? 0
+        var totalItems = 0
+        for section in 0..<sectionsCount {
+            totalItems += trackerProvider?.numberOfRowsInSection(section) ?? 0
+        }
+        let isNoTrackers = totalItems == 0
         
         starImage.isHidden = !isNoTrackers
         questionLabel.isHidden = !isNoTrackers
         collectionView.isHidden = isNoTrackers
     }
+    
     
     private func isTrackerCompletedToday(id: UUID) -> Bool {
         let pickerDate = Calendar.current.startOfDay(for: datePicker.date)
@@ -144,25 +169,17 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
             record.trackerId == id && Calendar.current.isDate(record.date, inSameDayAs: pickerDate)
         }
     }
-
     
-    //MARK: Methods
+    //MARK: - Methods
     func didCreateTracker(_ tracker: Tracker) {
-        if !categories.isEmpty{
-            var updatedTrackers = categories[0].trackers
-            updatedTrackers.append(tracker)
-            categories[0] = TrackerCategory(title: categories[0].title, trackers: updatedTrackers)
-        } else {
-            let newCategory = TrackerCategory(title: "Новый день", trackers: [tracker])
-            categories.append(newCategory)
+        do {
+            try trackerProvider?.addTracker(tracker)
+        } catch {
+            print("Не удалось добавить трекер: \(error)")
         }
-        
-        updatePlaceholder()
-        collectionView.reloadData()
     }
     
-    //MARK: Objc methods
-    
+    //MARK: - Objc methods
     @objc func datePickerValueChanged(_ sender: UIDatePicker) {
         let selectedDate = sender.date
         let dateformatter = DateFormatter()
@@ -178,32 +195,36 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         let navController = UINavigationController(rootViewController: createHabbitVC)
         present(navController, animated: true)
     }
-
 }
 
+//MARK: - UICollectionViewDataSource
 extension TrackerViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return categories.count
+        trackerProvider?.numberOfSections ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return categories[section].trackers.count
+        trackerProvider?.numberOfRowsInSection(section) ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackerCell.identifier, for: indexPath) as? TrackerCell else {
             return UICollectionViewCell()
         }
-        cell.delegate = self
-        let tracker = categories[indexPath.section].trackers[indexPath.row]
-        let pickerDate = Calendar.current.startOfDay(for: datePicker.date)
+        
+        guard let tracker = trackerProvider?.object(at: indexPath) else {
+            return cell
+        }
+        
         let isCompleted = isTrackerCompletedToday(id: tracker.id)
         let completedDays = completedTrackers.filter { $0.trackerId == tracker.id }.count
         cell.configure(isCompleted: isCompleted, completedDays: completedDays, tracker: tracker)
+        cell.delegate = self
         return cell
     }
 }
 
+//MARK: - UICollectionViewDelegateFlowLayout
 extension TrackerViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let availableWidth = collectionView.frame.width - params.paddingWidth
@@ -233,26 +254,49 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+//MARK: - TrackerCellDelegate
 extension TrackerViewController: TrackerCellDelegate {
     func trackerCellDidTapPlus(_ cell: TrackerCell) {
-        guard let indexPath = collectionView.indexPath(for: cell) else {
+        guard
+            let indexPath = collectionView.indexPath(for: cell),
+            let choosenTracker = trackerProvider?.object(at: indexPath) else {
             return
         }
-        let choosenTracker = categories[indexPath.section].trackers[indexPath.row]
-        print("получаем трекер")
+        
         let calendar = Calendar.current
         let currentDate = calendar.startOfDay(for: Date())
         let pickerDate = calendar.startOfDay(for: datePicker.date)
         guard pickerDate <= currentDate else { return }
-        if let index = completedTrackers.firstIndex(where: { $0.trackerId == choosenTracker.id && Calendar.current.isDate($0.date, inSameDayAs: pickerDate) }) {
-            completedTrackers.remove(at: index)
-            print("удаляем рекорд")
-        } else {
-            let newRecord = TrackerRecord(trackerId: choosenTracker.id, date: pickerDate)
-            completedTrackers.append(newRecord)
-            print("добавляем новый рекорд")
+        
+        let record = TrackerRecord(trackerId: choosenTracker.id, date: pickerDate)
+        
+        do {
+            if let index = completedTrackers.firstIndex(where: { $0.trackerId == choosenTracker.id && calendar.isDate($0.date, inSameDayAs: pickerDate) }) {
+                completedTrackers.remove(at: index)
+                try trackerRecordStore.remove(record)
+            } else {
+                completedTrackers.append(record)
+                try trackerRecordStore.add(record)
+            }
+            collectionView.reloadItems(at: [indexPath])
+        } catch {
+            print("Ошибка обновления рекорда: \(error)")
         }
-        collectionView.reloadItems(at: [indexPath])
-        print("перезагружаем ячейку")
+    }
+}
+
+// MARK: - TrackerProviderDelegate
+extension TrackerViewController: TrackerProviderDelegate {
+    func didUpdate(_ update: TrackerStoreUpdate) {
+        collectionView.performBatchUpdates({
+            if let insertedIndexes = update.insertedIndexes, !insertedIndexes.isEmpty {
+                collectionView.insertItems(at: insertedIndexes.map { IndexPath(item: $0, section: 0) })
+            }
+            if let deletedIndexes = update.deletedIndexes, !deletedIndexes.isEmpty {
+                collectionView.deleteItems(at: deletedIndexes.map { IndexPath(item: $0, section: 0) })
+            }
+        }, completion: nil)
+        
+        updatePlaceholder()
     }
 }

@@ -6,18 +6,11 @@ protocol ScheduleViewControllerDelegate: AnyObject {
 
 final class ScheduleViewController: UIViewController {
     
-    //MARK: Properties
+    //MARK: - Properties
     weak var delegate: ScheduleViewControllerDelegate?
-    private let options = ["Понедельник",
-                           "Вторник",
-                           "Среда",
-                           "Четверг",
-                           "Пятница",
-                           "Суббота",
-                           "Воскресенье"]
     private var selectedDays: [WeekDay] = []
     
-    //MARK: UI-elements
+    //MARK: - UI-elements
     private lazy var tableView: UITableView = {
         let table = UITableView(frame: .zero, style: .insetGrouped)
         table.translatesAutoresizingMaskIntoConstraints = false
@@ -47,7 +40,7 @@ final class ScheduleViewController: UIViewController {
         return button
     }()
     
-    //MARK: ViewDidLoad
+    //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(resource: .whiteDay)
@@ -60,7 +53,7 @@ final class ScheduleViewController: UIViewController {
         setUpConstraints()
     }
     
-    //MARK: Private methods
+    //MARK: - Private methods
     private func setUpViews() {
         view.addSubview(tableView)
         view.addSubview(titleLabel)
@@ -87,7 +80,7 @@ final class ScheduleViewController: UIViewController {
         ])
     }
     
-    //MARK: Objc-methods
+    //MARK: - Objc-methods
     @objc private func switchChanged(_ sender: UISwitch) {
         let day = WeekDay.allCases[sender.tag]
         
@@ -104,12 +97,12 @@ final class ScheduleViewController: UIViewController {
         delegate?.didTapCompleteButton(selectedDays)
         navigationController?.popViewController(animated: true)
     }
-
+    
 }
 
 extension ScheduleViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return options.count
+        return WeekDay.allCases.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -121,7 +114,8 @@ extension ScheduleViewController: UITableViewDataSource {
         switchView.addTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
         
         cell.accessoryView = switchView
-        cell.textLabel?.text = options[indexPath.row]
+        let day = WeekDay.allCases[indexPath.row]
+        cell.textLabel?.text = day.fullName
         cell.backgroundColor = UIColor(resource: .backgroundDay)
         return cell
     }
@@ -135,7 +129,7 @@ extension ScheduleViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return .leastNormalMagnitude
     }
-
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return UIView()
     }
