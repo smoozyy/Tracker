@@ -25,7 +25,6 @@ final class OnboardingViewController: UIPageViewController {
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         return button
     }()
-    
     //MARK: - Init
     init() {
         super.init(transitionStyle: .scroll,
@@ -93,6 +92,8 @@ final class OnboardingViewController: UIPageViewController {
     }
     
     @objc private func switchToTabControllerTapped() {
+        StorageModel.shared.hasSwitchToTabBarController = true
+        
         let trackerStore = TrackerStore()
         let trackersVC = TrackerViewController(trackerStore: trackerStore)
         trackersVC.tabBarItem = UITabBarItem(
