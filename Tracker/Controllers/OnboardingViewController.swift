@@ -55,6 +55,7 @@ final class OnboardingViewController: UIPageViewController {
             button.widthAnchor.constraint(equalToConstant: 335),
             button.heightAnchor.constraint(equalToConstant: 60)
         ])
+        button.addTarget(self, action: #selector(switchToTabControllerTapped), for: .touchUpInside)
     }
     
     //MARK: - Private Methods
@@ -90,9 +91,32 @@ final class OnboardingViewController: UIPageViewController {
         
         return controller
     }
+    
+    @objc private func switchToTabControllerTapped() {
+        let trackerStore = TrackerStore()
+        let trackersVC = TrackerViewController(trackerStore: trackerStore)
+        trackersVC.tabBarItem = UITabBarItem(
+            title: "Трекеры",
+            image: UIImage(resource: .recordCircle),
+            tag: 0
+        )
+        
+        let statsVC = StatsViewController()
+        statsVC.tabBarItem = UITabBarItem(
+            title: "Статистика",
+            image: UIImage(resource: .hare),
+            tag: 1
+        )
+        
+        
+        let tabBarController = UITabBarController()
+        tabBarController.viewControllers = [trackersVC, statsVC]
+        guard let window = view.window else { return }
+        window.rootViewController = tabBarController
+    }
 }
 
-    //MARK: - DataSource
+//MARK: - DataSource
 extension OnboardingViewController: UIPageViewControllerDataSource {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let index = pages.firstIndex(of: viewController) else { return nil }
