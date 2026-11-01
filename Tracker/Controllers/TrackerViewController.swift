@@ -169,16 +169,16 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
             record.trackerId == id && Calendar.current.isDate(record.date, inSameDayAs: pickerDate)
         }
     }
-    
+
     //MARK: - Methods
-    func didCreateTracker(_ tracker: Tracker) {
+    func didCreateTracker(_ tracker: Tracker, withCategory category: String) {
         do {
-            try trackerProvider?.addTracker(tracker)
+            try trackerProvider?.addTracker(tracker, withCategory: category)
         } catch {
             print("Не удалось добавить трекер: \(error)")
         }
     }
-    
+
     //MARK: - Objc methods
     @objc func datePickerValueChanged(_ sender: UIDatePicker) {
         let selectedDate = sender.date
@@ -249,7 +249,7 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
               let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TrackerCellHeader.identifier, for: indexPath) as? TrackerCellHeader else {
             return UICollectionReusableView()
         }
-        header.titleLabel.text = "Домашний уют"
+        header.titleLabel.text = trackerProvider?.headerTitle(for: indexPath.section) ?? ""
         return header
     }
 }
@@ -288,15 +288,8 @@ extension TrackerViewController: TrackerCellDelegate {
 // MARK: - TrackerProviderDelegate
 extension TrackerViewController: TrackerProviderDelegate {
     func didUpdate(_ update: TrackerStoreUpdate) {
-        collectionView.performBatchUpdates({
-            if let insertedIndexes = update.insertedIndexes, !insertedIndexes.isEmpty {
-                collectionView.insertItems(at: insertedIndexes.map { IndexPath(item: $0, section: 0) })
-            }
-            if let deletedIndexes = update.deletedIndexes, !deletedIndexes.isEmpty {
-                collectionView.deleteItems(at: deletedIndexes.map { IndexPath(item: $0, section: 0) })
-            }
-        }, completion: nil)
-        
+        collectionView.reloadData()
         updatePlaceholder()
     }
 }
+

@@ -15,6 +15,18 @@ final class OnboardingViewController: UIPageViewController {
         makePage(with: UIImage(resource: .uiPageViewControllerRed),
                  text: "Даже если это не литры воды и йога")
     ]
+    
+    private lazy var pageControl: UIPageControl = {
+        let pageControl = UIPageControl()
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        pageControl.numberOfPages = pages.count
+        pageControl.currentPage = 0
+        pageControl.currentPageIndicatorTintColor = .blackDay
+        pageControl.pageIndicatorTintColor = .gray
+        pageControl.addTarget(self, action: #selector(pageControlTapped(_:)), for: .valueChanged)
+        return pageControl
+    }()
+    
     private lazy var button: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -25,12 +37,14 @@ final class OnboardingViewController: UIPageViewController {
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         return button
     }()
+    
     //MARK: - Init
     init() {
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
                    options: nil)
     }
+    
     @available(*, unavailable)
     required init?(coder: NSCoder){
         nil
@@ -41,19 +55,25 @@ final class OnboardingViewController: UIPageViewController {
         super.viewDidLoad()
         
         dataSource = self
+        delegate = self
         
         if let first = pages.first {
             setViewControllers([first], direction: .forward, animated: true, completion: nil)
         }
         
+        view.addSubview(pageControl)
         view.addSubview(button)
         
         NSLayoutConstraint.activate([
+            pageControl.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -24),
+            pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
             button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
             button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             button.widthAnchor.constraint(equalToConstant: 335),
             button.heightAnchor.constraint(equalToConstant: 60)
         ])
+        
         button.addTarget(self, action: #selector(switchToTabControllerTapped), for: .touchUpInside)
     }
     
@@ -91,6 +111,15 @@ final class OnboardingViewController: UIPageViewController {
         return controller
     }
     
+    @objc private func pageControlTapped(_ sender: UIPageControl) {
+        let index = sender.currentPage
+        let currentVC = viewControllers?.first
+        let currentIndex = currentVC.flatMap { pages.firstIndex(of: $0) } ?? 0
+        
+        let direction: UIPageViewController.NavigationDirection = index > currentIndex ? .forward : .reverse
+        setViewControllers([pages[index]], direction: direction, animated: true, completion: nil)
+    }
+    
     @objc private func switchToTabControllerTapped() {
         StorageModel.shared.hasSwitchToTabBarController = true
         
@@ -108,7 +137,6 @@ final class OnboardingViewController: UIPageViewController {
             image: UIImage(resource: .hare),
             tag: 1
         )
-        
         
         let tabBarController = UITabBarController()
         tabBarController.viewControllers = [trackersVC, statsVC]
@@ -131,5 +159,17 @@ extension OnboardingViewController: UIPageViewControllerDataSource {
         let nextIndex = index + 1
         guard nextIndex < pages.count else { return nil }
         return pages[nextIndex]
+    }
+}
+
+//MARK: - Delegate
+extension OnboardingViewController: UIPageViewControllerDelegate {
+    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+        guard completed,
+              let currentVC = pageViewController.viewControllers?.first,
+              let index = pages.firstIndex(of: currentVC) else {
+            return
+        }
+        pageControl.currentPage = index
     }
 }

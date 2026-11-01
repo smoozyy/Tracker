@@ -56,17 +56,32 @@ final class TrackerStore {
     }
     
     
-    func addNewTracker(from tracker: Tracker) throws -> TrackerCoreData {
+    func addNewTracker(from tracker: Tracker, withCategory categoryTitle: String) throws -> TrackerCoreData {
         let trackerCoreData = TrackerCoreData(context: context)
         trackerCoreData.id = tracker.id
         trackerCoreData.name = tracker.name
         trackerCoreData.color = tracker.color
         trackerCoreData.emoji = tracker.emoji
         trackerCoreData.schedule = tracker.schedule as NSObject
+        
+        let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "title == %@", categoryTitle)
+        let categories = try context.fetch(fetchRequest)
+        
+        let categoryCoreData: TrackerCategoryCoreData
+        if let existingCategory = categories.first {
+            categoryCoreData = existingCategory
+        } else {
+            let newCategory = TrackerCategoryCoreData(context: context)
+            newCategory.title = categoryTitle
+            categoryCoreData = newCategory
+        }
+        
+        trackerCoreData.category = categoryCoreData
         try context.save()
         return trackerCoreData
     }
-    
+
     private func performSync<R>(_ action: (NSManagedObjectContext) throws -> R) throws -> R { ///метод гарантирующий работу системы в потоке, которому принадлежит контекст с помощью performAndWait
         let context = self.context
         var result: Result<R, Error>!
@@ -88,9 +103,9 @@ extension TrackerStore: TrackerStoreProtocol {
         context
     }
     
-    func add(_ tracker: Tracker) throws {
+    func add(_ tracker: Tracker, withCategory category: String) throws {
         _ = try performSync { context in
-            _ = try self.addNewTracker(from: tracker)
+            _ = try self.addNewTracker(from: tracker, withCategory: category)
         }
     }
     
