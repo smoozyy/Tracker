@@ -91,10 +91,11 @@ final class CreateCategoryViewController: UIViewController {
             guard let self = self else { return }
 
             self.completeButton.isEnabled = isEnabled
-            self.completeButton.backgroundColor = isEnabled ? UIColor(resource: .blackDay) : .gray
+            self.completeButton.backgroundColor = isEnabled
+                ? UIColor(resource: .blackDay)
+                : .gray
         }
     }
-    
     //MARK: - Objc methods
     @objc private func textFieldDidChange() {
             viewModel.updateCategoryName(textField.text ?? "")
@@ -102,8 +103,8 @@ final class CreateCategoryViewController: UIViewController {
     
     @objc private func switchToCategoriesController() {
         guard let text = textField.text else {return}
-        viewModel.saveCategory(textField.text ?? "")
-        viewModel.loadCategories()
+        viewModel.saveCategory(text)
+
         dismiss(animated: true)
     }
 

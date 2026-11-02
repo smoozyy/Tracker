@@ -7,11 +7,11 @@
 
 import UIKit
 
+
+
 final class CategoriesViewController: UIViewController {
     //MARK: - Properties
     var selectCategoryHandler: ((String) -> Void)?
-    var selectedCategory: String?
-    var selectedCategoryIndex: Int?
     let viewModel = CategoriesViewModel.shared
     private lazy var starImage: UIImageView = {
         let image = UIImageView(image: UIImage(resource: .star))
@@ -59,13 +59,19 @@ final class CategoriesViewController: UIViewController {
         super.viewWillAppear(animated)
         viewModel.loadCategories()
     }
-
+    
     //MARK: - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .whiteDay
         
-        setUpTableView()
+        tableView.register(
+            TrackerCategoryCell.self,
+            forCellReuseIdentifier: TrackerCategoryCell.identifier
+        )
+        tableView.dataSource = self
+        tableView.delegate = self
+        
         setUpView()
         setUpConstraints()
         bindViewModel()
@@ -74,22 +80,19 @@ final class CategoriesViewController: UIViewController {
     private func bindViewModel() {
         viewModel.categoryArrayDidChange = { [weak self] in
             guard let self = self else { return }
-            let categoriesIsEmpty = self.viewModel.categories.isEmpty
+            let categoriesIsEmpty = self.viewModel.numberOfCategories() == 0
             
             self.tableView.isHidden = categoriesIsEmpty
             self.starImage.isHidden = !categoriesIsEmpty
             self.titleLabel.isHidden = !categoriesIsEmpty
-            
             self.tableView.reloadData()
         }
+        viewModel.onCategorySelected = { [weak self] categoryTitle in
+            guard let self = self else { return }
+            self.selectCategoryHandler?(categoryTitle)
+            self.navigationController?.popViewController(animated: true)
+        }
         viewModel.categoryArrayDidChange?()
-    }
-
-
-    
-    private func setUpTableView() {
-        tableView.dataSource = self
-        tableView.delegate = self
     }
     
     private func setUpConstraints() {
@@ -138,19 +141,23 @@ final class CategoriesViewController: UIViewController {
 //MARK: - DataSource
 extension CategoriesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.categories.count
+        viewModel.numberOfCategories()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .subtitle ,reuseIdentifier: "cell")
-        cell.textLabel?.text = viewModel.categories[indexPath.row].title
-        cell.backgroundColor = UIColor(resource: .backgroundDay)
-        cell.selectionStyle = .none
-        cell.accessoryType = selectedCategoryIndex == indexPath.row ? .checkmark : .none
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: TrackerCategoryCell.identifier
+        ) as? TrackerCategoryCell else {
+            return UITableViewCell()
+        }
+        guard let cellViewModel = viewModel.cellViewModel(at: indexPath) else {
+            return cell
+        }
+        
+        cell.configure(with: cellViewModel)
         return cell
     }
 }
-
 //MARK: - Delegate
 extension CategoriesViewController: UITableViewDelegate {
     
@@ -168,14 +175,6 @@ extension CategoriesViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let chosenCategory = viewModel.categories[indexPath.row].title
-        selectedCategory = chosenCategory
-        selectedCategoryIndex = indexPath.row
-        selectCategoryHandler?(chosenCategory)
-        tableView.reloadData()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
-            guard let self = self else {return}
-            self.navigationController?.popViewController(animated: true)
-        }
+        viewModel.selectCategory(at: indexPath.row)
     }
 }
