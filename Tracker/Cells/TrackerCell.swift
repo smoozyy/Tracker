@@ -51,7 +51,6 @@ final class TrackerCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = UIColor(resource: .blackDay)
-        label.text = "0 дней"
         return label
     }()
     
@@ -127,7 +126,12 @@ final class TrackerCell: UICollectionViewCell {
         cardView.backgroundColor = TrackerColor(rawValue: tracker.color)?.color
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.name
-        countLabel.text = completedDays.daysString()
+        let daysCount = completedDays
+        let daysString = String.localizedStringWithFormat(
+            NSLocalizedString("numberOfDays", comment: "Кол-во дней"),
+            daysCount
+        )
+        countLabel.text = daysString
         let image = isCompleted ? SystemImages.System.checkmark : SystemImages.System.plus
         let config = UIImage.SymbolConfiguration(pointSize: 11, weight: .bold)
         let configuredImage = UIImage(systemName: image, withConfiguration: config)
