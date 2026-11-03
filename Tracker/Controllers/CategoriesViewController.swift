@@ -24,13 +24,13 @@ final class CategoriesViewController: UIViewController {
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textColor = .blackDay
         label.textAlignment = .center
-        label.text = "Категория"
+        label.text = NSLocalizedString("categoryLabel", comment: "Категория")
         return label
     }()
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Привычки и события можно \nобьеденить по смыслу"
+        label.text = NSLocalizedString("categoryTitleLabel", comment: "Надпись при заглушке")
         label.textAlignment = .center
         label.numberOfLines = 0
         label.font = .systemFont(ofSize: 12, weight: .medium)
@@ -42,7 +42,7 @@ final class CategoriesViewController: UIViewController {
         button.layer.cornerRadius = 16
         button.backgroundColor = UIColor(resource: .blackDay)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        button.setTitle("Добавить категорию", for: .normal)
+        button.setTitle(NSLocalizedString("categoryAddButton", comment: "Добавление категоии"), for: .normal)
         button.tintColor = UIColor(resource: .whiteDay)
         return button
     }()

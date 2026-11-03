@@ -42,7 +42,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     private lazy var trackerLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Трекеры"
+        label.text = NSLocalizedString("trackerLabel", comment: "Заголовок экрана")
         label.font = .systemFont(ofSize: 34, weight: .bold)
         label.textColor = .black
         return label
@@ -55,7 +55,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         textField.leftView = searchBarIcon
         textField.leftViewMode = .always
         textField.backgroundColor = .color
-        textField.text = "Поиск"
+        textField.text = NSLocalizedString("searchField", comment: "Поиск")
         return textField
     }()
     
@@ -64,7 +64,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         datePicker.translatesAutoresizingMaskIntoConstraints = false
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
-        datePicker.locale = Locale(identifier: "ru_RU")
+        datePicker.locale = Locale.current
         return datePicker
     }()
     
@@ -77,7 +77,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     private lazy var questionLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Что будем отслеживать?"
+        label.text = NSLocalizedString("questionLabel", comment: "Надпись на экране заглушки")
         label.font = .systemFont(ofSize: 12, weight: .medium)
         return label
     }()

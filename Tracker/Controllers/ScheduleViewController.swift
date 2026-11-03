@@ -24,7 +24,7 @@ final class ScheduleViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textColor = UIColor(resource: .blackDay)
-        label.text = "Расписание"
+        label.text = NSLocalizedString("titleLabel", comment: "Расписание")
         return label
         
     }()
@@ -35,7 +35,7 @@ final class ScheduleViewController: UIViewController {
         button.layer.cornerRadius = 16
         button.backgroundColor = UIColor(resource: .blackDay)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        button.setTitle("Готово", for: .normal)
+        button.setTitle(NSLocalizedString("scheduleCompleteButton", comment: "Кнопка подтверждения"), for: .normal)
         button.tintColor = UIColor(resource: .whiteDay)
         return button
     }()

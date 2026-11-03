@@ -34,7 +34,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textColor = .blackDay
         label.textAlignment = .center
-        label.text = "Новая привычка"
+        label.text = NSLocalizedString("createScheduleTitle", comment: "Создание новой привычки")
         return label
     }()
     
@@ -42,7 +42,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         let text = UITextField()
         text.translatesAutoresizingMaskIntoConstraints = false
         text.layer.cornerRadius = 16
-        text.placeholder = "Введите название трекера"
+        text.placeholder = NSLocalizedString("namedTracker", comment: "Надпись в текстфилде")
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
         text.leftView = paddingView
         text.leftViewMode = .always
@@ -58,7 +58,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         button.layer.borderColor = UIColor(resource: .red).cgColor
         button.backgroundColor = .whiteDay
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        button.setTitle("Отменить", for: .normal)
+        button.setTitle(NSLocalizedString("habitCancelButton", comment: "Кнопка отмены"), for: .normal)
         button.setTitleColor(UIColor(resource: .red), for: .normal)
         return button
     }()
@@ -69,7 +69,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         button.layer.cornerRadius = 16
         button.backgroundColor = UIColor(resource: .GRAY)
         button.tintColor = UIColor(resource: .whiteDay)
-        button.setTitle("Создать", for: .normal)
+        button.setTitle(NSLocalizedString("habitCreateButton", comment: "Кнопка создания"), for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         return button
     }()
@@ -103,7 +103,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         self.selectedDays = days
         updateCreateButtonStyle()
         if days.count == 7 {
-            scheduleSubtitle = "Каждый день"
+            scheduleSubtitle = NSLocalizedString("habitEveryDay", comment: "Надпись, если выбрали все дни недели")
         } else {
             scheduleSubtitle = days.map { $0.shortName }.joined(separator: ", ")
         }
@@ -260,7 +260,7 @@ extension CreateHabitViewController: UICollectionViewDelegateFlowLayout {
               let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HabitEmojiHeader.identifier, for: indexPath) as? HabitEmojiHeader else {
             return UICollectionReusableView()
         }
-        header.titleLabel.text = indexPath.section == 0 ? "Emoji" : "Цвет"
+        header.titleLabel.text = indexPath.section == 0 ? "Emoji" : NSLocalizedString("habitColorSelection", comment: "Селекция выбора цвета в колекции")
         return header
     }
 }

@@ -8,6 +8,6 @@
 import Foundation
 
 enum TrackerConstants {
-    static let options = ["Категория", "Расписание"]
+    static let options = [NSLocalizedString("trackerConstantsCategory", comment: "Переход на экран категории"), NSLocalizedString("trackerConstantsSchedule", comment: "Переход на экран расписание")]
     static let emojiArray = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝️", "😪"]
 }

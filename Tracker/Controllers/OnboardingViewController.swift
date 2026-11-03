@@ -11,9 +11,9 @@ final class OnboardingViewController: UIPageViewController {
     //MARK: - Properties
     private lazy var pages: [UIViewController] = [
         makePage(with: UIImage(resource: .uiPageViewControllerBlue),
-                 text: "Отслеживайте только то, что хотите"),
+                 text: NSLocalizedString("firstPageVC", comment: "Надпись на 1 экране")),
         makePage(with: UIImage(resource: .uiPageViewControllerRed),
-                 text: "Даже если это не литры воды и йога")
+                 text: NSLocalizedString("secondPageVC", comment: "Надпись на 2 экране"))
     ]
     
     private lazy var pageControl: UIPageControl = {
@@ -32,7 +32,7 @@ final class OnboardingViewController: UIPageViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.cornerRadius = 16
         button.backgroundColor = .blackDay
-        button.setTitle("Вот это технологии!", for: .normal)
+        button.setTitle(NSLocalizedString("technology", comment: "Надпись на кнопке"), for: .normal)
         button.setTitleColor(.whiteDay, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         return button
@@ -126,14 +126,14 @@ final class OnboardingViewController: UIPageViewController {
         let trackerStore = TrackerStore()
         let trackersVC = TrackerViewController(trackerStore: trackerStore)
         trackersVC.tabBarItem = UITabBarItem(
-            title: "Трекеры",
+            title: NSLocalizedString("tabTrackers", comment: "Надпись в таб баре"),
             image: UIImage(resource: .recordCircle),
             tag: 0
         )
         
         let statsVC = StatsViewController()
         statsVC.tabBarItem = UITabBarItem(
-            title: "Статистика",
+            title: NSLocalizedString("statistics", comment: "Надпись в таб баре"),
             image: UIImage(resource: .hare),
             tag: 1
         )

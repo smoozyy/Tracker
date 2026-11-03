@@ -12,24 +12,24 @@ enum WeekDay: Int, CaseIterable, Codable {
     case monday = 1, tuesday, wednesday, thursday, friday, saturday, sunday
     var fullName: String {
         switch self {
-        case .monday: return "Понедельник"
-        case .tuesday: return "Вторник"
-        case .wednesday: return "Среда"
-        case .thursday: return "Четверг"
-        case .friday: return "Пятница"
-        case .saturday: return "Cуббота"
-        case .sunday: return "Воскресенье"
+        case .monday: return NSLocalizedString("monday", comment: "Понедельник")
+        case .tuesday: return NSLocalizedString("tuesday", comment: "Вторник")
+        case .wednesday: return NSLocalizedString("wednesday", comment: "Среда")
+        case .thursday: return NSLocalizedString("thursday", comment: "Четверг")
+        case .friday: return NSLocalizedString("friday", comment: "Пятница")
+        case .saturday: return NSLocalizedString("saturday", comment: "Суббота")
+        case .sunday: return NSLocalizedString("sunday", comment: "Воскресенье")
         }
     }
     var shortName: String {
         switch self {
-        case .monday: return "Пн"
-        case .tuesday: return "Вт"
-        case .wednesday: return "Ср"
-        case .thursday: return "Чт"
-        case .friday: return "Пт"
-        case .saturday: return "Cб"
-        case .sunday: return "Вс"
+        case .monday: return NSLocalizedString("monday_short", comment: "Сокращенное название дня недели")
+        case .tuesday: return NSLocalizedString("tuesday_short", comment: "Сокращенное название дня недели")
+        case .wednesday: return NSLocalizedString("wednesday_short", comment: "Сокращенное название дня недели")
+        case .thursday: return NSLocalizedString("thursday_short", comment: "Сокращенное название дня недели")
+        case .friday: return NSLocalizedString("friday_short", comment: "Сокращенное название дня недели")
+        case .saturday: return NSLocalizedString("saturday_short", comment: "Сокращенное название дня недели")
+        case .sunday: return NSLocalizedString("sunday_short", comment: "Сокращенное название дня недели")
         }
     }
 }

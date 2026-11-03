@@ -1,0 +1,46 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Антон on 03.11.2026.
+  
+*/
+
+"trackerLabel" = "Trackers";
+"searchField" = "Search";
+"questionLabel" = "What are we tracking?";
+"titleLabel" = "Schedule";
+"scheduleCompleteButton" = "Done";
+"firstPageVC" = "Only track what you want";
+"secondPageVC" = "Even if it's not gallons of water and yoga";
+"technology" = "Now that's technology!";
+"tabTrackers" = "Trackers";
+"statistics" = "Statistics";
+"createScheduleTitle" = "A new habit";
+"namedTracker" = "Enter tracker name";
+"habitCancelButton" = "Cancel";
+"habitCreateButton" = "Create";
+"habitEveryDay" = "Every day";
+"habitColorSelection" = "Color";
+"newCategoryLabel" = "New category";
+"categoryCompleteButton" = "Done";
+"categoryTextField" = "Enter category name";
+"categoryLabel" = "Category";
+"categoryTitleLabel" = "Group your habits and events \nby theme";
+"categoryAddButton" = "Add category";
+"trackerConstantsCategory" = "Categories";
+"trackerConstantsSchedule" = "Schedule";
+"monday" = "Monday";
+"tuesday" = "Tuesday";
+"wednesday" = "Wednesday";
+"thursday" = "Thursday";
+"friday" = "Friday";
+"saturday" = "Saturday";
+"sunday" = "Sunday";
+"monday_short" = "Mon";
+"tuesday_short" = "Tue";
+"wednesday_short" = "Wed";
+"thursday_short" = "Thu";
+"friday_short" = "Fri";
+"saturday_short" = "Sat";
+"sunday_short" = "Sun";
