@@ -17,8 +17,9 @@ protocol TrackerProviderProtocol {
     var numberOfSections: Int { get }
     func numberOfRowsInSection(_ section: Int) -> Int
     func object(at: IndexPath) -> Tracker?
-    func addTracker(_ tracker: Tracker) throws
+    func addTracker(_ tracker: Tracker, withCategory: String) throws
     func deleteTracker(at indexPath: IndexPath) throws
+    func headerTitle(for section: Int) -> String?
 }
 
 protocol TrackerProviderDelegate: AnyObject {
@@ -37,20 +38,23 @@ final class TrackerStoreProvider: NSObject {
     //MARK: - FetchResultsController
     private lazy var fetchedResultsController: NSFetchedResultsController<TrackerCoreData> = {
         let fetchRequest = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+            fetchRequest.sortDescriptors = [
+            NSSortDescriptor(key: "category.title", ascending: true),
+            NSSortDescriptor(key: "name", ascending: true)
+        ]
         
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "emoji", ascending: true)]
-        
-        let controller = NSFetchedResultsController(fetchRequest: fetchRequest,
-                                                    managedObjectContext: context,
-                                                    sectionNameKeyPath: nil,
-                                                    cacheName: nil
+        let controller = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: context,
+            sectionNameKeyPath: "category.title",
+            cacheName: nil
         )
         
         controller.delegate = self
         try? controller.performFetch()
         return controller
     }()
-    
+
     init(_ trackerStore: TrackerStore, delegate: TrackerProviderDelegate) throws {
         guard let context = trackerStore.managedObjectContext else {
             throw StoreError.failedToInitializeContext
@@ -66,6 +70,10 @@ extension TrackerStoreProvider: TrackerProviderProtocol {
         fetchedResultsController.sections?.count ?? 0
     }
     
+    func headerTitle(for section: Int) -> String? {
+        return fetchedResultsController.sections?[section].name
+    }
+
     func numberOfRowsInSection(_ section: Int) -> Int {
         fetchedResultsController.sections?[section].numberOfObjects ?? 0
     }
@@ -75,9 +83,9 @@ extension TrackerStoreProvider: TrackerProviderProtocol {
         return try? trackerStore.makeTracker(from: trackerCoreData)
     }
     
-    func addTracker(_ tracker: Tracker) throws {
-        try trackerStore.add(tracker)
-    }
+    func addTracker(_ tracker: Tracker, withCategory category: String) throws {
+          try trackerStore.add(tracker, withCategory: category)
+      }
     
     func deleteTracker(at indexPath: IndexPath) throws {
         let tracker = fetchedResultsController.object(at: indexPath)
