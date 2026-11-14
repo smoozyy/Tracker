@@ -131,7 +131,7 @@ final class OnboardingViewController: UIPageViewController {
             tag: 0
         )
         
-        let statsVC = StatsViewController()
+        let statsVC = StatisticViewController()
         statsVC.tabBarItem = UITabBarItem(
             title: NSLocalizedString("statistics", comment: "Надпись в таб баре"),
             image: UIImage(resource: .hare),

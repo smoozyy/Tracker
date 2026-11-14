@@ -15,7 +15,7 @@ final class CreateCategoryViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.textColor = .blackDay
+        label.textColor = UIColor(resource: .forText)
         label.textAlignment = .center
         label.text = NSLocalizedString("newCategoryLabel", comment: "Надпись вверху экрана CreateCategoryVC")
         return label
@@ -28,7 +28,7 @@ final class CreateCategoryViewController: UIViewController {
         button.backgroundColor = .gray
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.setTitle(NSLocalizedString("categoryCompleteButton", comment: "Кнопка подтверждения"), for: .normal)
-        button.tintColor = UIColor(resource: .whiteDay)
+        button.tintColor = UIColor(resource: .forCreatebuttonhabit)
         button.isEnabled = false
         return button
     }()
@@ -41,7 +41,7 @@ final class CreateCategoryViewController: UIViewController {
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
         text.leftView = paddingView
         text.leftViewMode = .always
-        text.backgroundColor = .backgroundDay
+        text.backgroundColor = UIColor(resource: .tableViewBackcolor)
         return text
     }()
 
@@ -50,7 +50,7 @@ final class CreateCategoryViewController: UIViewController {
     //MARK: - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .whiteDay
+        view.backgroundColor = UIColor(resource: .backgroundDay)
         
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         
@@ -91,9 +91,10 @@ final class CreateCategoryViewController: UIViewController {
             guard let self = self else { return }
 
             self.completeButton.isEnabled = isEnabled
-            self.completeButton.backgroundColor = isEnabled
-                ? UIColor(resource: .blackDay)
-                : .gray
+            self.completeButton.backgroundColor = isEnabled ? UIColor(resource: .blackDay) : UIColor(resource: .forCreatebuttonhabit)
+            let textColor = isEnabled ? UIColor(resource: .forTextInButton) : UIColor(resource: .ypWhite)
+            self.completeButton.setTitleColor(textColor, for: .normal)
+            
         }
     }
     //MARK: - Objc methods

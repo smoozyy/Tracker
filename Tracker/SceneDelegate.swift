@@ -12,14 +12,14 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let trackerStore = TrackerStore()
         let trackersVC = TrackerViewController(trackerStore: trackerStore)
         trackersVC.tabBarItem = UITabBarItem(
-            title: "Трекеры",
+            title: NSLocalizedString("trackerConstantsCategory", comment: "Надпись категории в tabBar"),
             image: UIImage(resource: .recordCircle),
             tag: 0
         )
         
-        let statsVC = StatsViewController()
+        let statsVC = StatisticViewController()
         statsVC.tabBarItem = UITabBarItem(
-            title: "Статистика",
+            title: NSLocalizedString("statistics", comment: "Надпись статистики в tabBar"),
             image: UIImage(resource: .hare),
             tag: 1
         )

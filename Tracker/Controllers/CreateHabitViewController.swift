@@ -32,7 +32,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.textColor = .blackDay
+        label.textColor = UIColor(resource: .forText)
         label.textAlignment = .center
         label.text = NSLocalizedString("createScheduleTitle", comment: "Создание новой привычки")
         return label
@@ -46,7 +46,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
         text.leftView = paddingView
         text.leftViewMode = .always
-        text.backgroundColor = .backgroundDay
+        text.backgroundColor = UIColor(resource: .tableViewBackcolor)
         return text
     }()
     
@@ -56,7 +56,7 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         button.layer.cornerRadius = 16
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor(resource: .red).cgColor
-        button.backgroundColor = .whiteDay
+        button.backgroundColor = UIColor(resource: .whiteDay)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.setTitle(NSLocalizedString("habitCancelButton", comment: "Кнопка отмены"), for: .normal)
         button.setTitleColor(UIColor(resource: .red), for: .normal)
@@ -77,7 +77,8 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
     //MARK: - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(resource: .whiteDay)
+        habitCollectionView.backgroundColor = UIColor(resource: .backgroundDay)
+        view.backgroundColor = UIColor(resource: .backgroundDay)
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -121,9 +122,11 @@ final class CreateHabitViewController: UIViewController, ScheduleViewControllerD
         if hasText && hasSchedule && hasEmoji && hasColor && hasCategory {
             createButton.isEnabled = true
             createButton.backgroundColor = UIColor(resource: .blackDay)
+            createButton.setTitleColor(UIColor(resource: .forTextInButton), for: .normal)
         } else {
             createButton.isEnabled = false
-            createButton.backgroundColor = UIColor(resource: .GRAY)
+            createButton.setTitleColor(UIColor(resource: .ypWhite), for: .normal)
+            createButton.backgroundColor = UIColor(resource: .forCreatebuttonhabit)
         }
     }
 
@@ -272,7 +275,7 @@ extension CreateHabitViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle ,reuseIdentifier: "cell")
         cell.textLabel?.text = options[indexPath.row]
-        cell.backgroundColor = UIColor(resource: .backgroundDay)
+        cell.backgroundColor = UIColor(resource: .tableViewBackcolor)
         cell.accessoryType = .disclosureIndicator
         cell.selectionStyle = .none
         

@@ -44,3 +44,12 @@
 "friday_short" = "Пт";
 "saturday_short" = "Сб";
 "sunday_short" = "Вс";
+"FilterLabel" = "Фильтры";
+"allTrackers" = "Все трекеры";
+"dailyTrackers" = "Трекеры на сегодня";
+"completedTrackers" = "Завершенные";
+"notCompletedtrackers" = "Не завершенные";
+"trackersCompleted" = "Трекеров завершено";
+"bestPeriod" = "Лучший период";
+"perfectDays" = "Идеальные дни";
+"averageValue" = "Среднее значение";

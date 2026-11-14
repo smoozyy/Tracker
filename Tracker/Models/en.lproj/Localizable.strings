@@ -44,3 +44,13 @@
 "friday_short" = "Fri";
 "saturday_short" = "Sat";
 "sunday_short" = "Sun";
+"FilterLabel" = "Filters";
+"allTrackers" = "All trackers";
+"dailyTrackers" = "Daily trackers";
+"completedTrackers" = "Completed";
+"notCompletedtrackers" = "Not completed";
+"trackersCompleted" = "The trackers are completed";
+"bestPeriod" = "The best period";
+"perfectDays" = "The perfect days";
+"averageValue" = "The average value";
+

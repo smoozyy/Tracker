@@ -41,7 +41,7 @@ final class TrackerCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .medium)
-        label.textColor = UIColor(resource: .ypWhite)
+        label.textColor = UIColor(resource: .forText)
         label.numberOfLines = 2
         return label
     }()
@@ -57,7 +57,6 @@ final class TrackerCell: UICollectionViewCell {
     private lazy var plusButton: UIButton = {
         let button = UIButton(type: .custom)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = UIColor(resource: .colorSection5)
         button.layer.cornerRadius = 17
         button.layer.masksToBounds = true
         button.tintColor = .whiteDay
@@ -124,6 +123,7 @@ final class TrackerCell: UICollectionViewCell {
     
     func configure(isCompleted: Bool, completedDays: Int, tracker: Tracker){
         cardView.backgroundColor = TrackerColor(rawValue: tracker.color)?.color
+        plusButton.backgroundColor = TrackerColor(rawValue: tracker.color)?.color
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.name
         let daysCount = completedDays

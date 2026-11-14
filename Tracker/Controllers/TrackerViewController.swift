@@ -1,8 +1,10 @@
 import UIKit
 
-final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
+final class TrackerViewController: UIViewController, CreateHabitViewDelegate, FilterViewControllerDelegate {
     
     //MARK: - Properties
+    private var categories: [TrackerCategory] = []
+    private var selectedFilter: TrackerFilter = .all
     private let trackerRecordStore = TrackerRecordStore()
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     private let params = GeometricParams(cellCount: 2, leftInset: 16, rightInset: 16, cellSpacing: 9)
@@ -32,6 +34,17 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     
     
     //MARK: - UI-Elements
+    private lazy var filterButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle(NSLocalizedString("FilterLabel", comment: "Надпись фильтра на экране трекера"), for: .normal)
+        button.titleLabel?.textAlignment = .center
+        button.titleLabel?.textColor = .white
+        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .regular)
+        button.backgroundColor = UIColor(resource: .blueColorForFilterButton)
+        button.layer.cornerRadius = 16
+        return button
+    }()
     private lazy var plusButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -44,7 +57,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = NSLocalizedString("trackerLabel", comment: "Заголовок экрана")
         label.font = .systemFont(ofSize: 34, weight: .bold)
-        label.textColor = .black
+        label.textColor = UIColor(resource: .forText)
         return label
     }()
     
@@ -56,12 +69,14 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         textField.leftViewMode = .always
         textField.backgroundColor = .color
         textField.text = NSLocalizedString("searchField", comment: "Поиск")
+        textField.textColor = UIColor(resource: .forText)
         return textField
     }()
     
     private lazy var datePicker: UIDatePicker = {
         let datePicker = UIDatePicker()
         datePicker.translatesAutoresizingMaskIntoConstraints = false
+        datePicker.tintColor = UIColor(resource: .picker)
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
         datePicker.locale = Locale.current
@@ -78,6 +93,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = NSLocalizedString("questionLabel", comment: "Надпись на экране заглушки")
+        label.textColor = UIColor(resource: .forText)
         label.font = .systemFont(ofSize: 12, weight: .medium)
         return label
     }()
@@ -86,7 +102,8 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         completedTrackers = (try? trackerRecordStore.fetchRecords()) ?? []
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(resource: .whiteDay)
+        collectionView.backgroundColor = UIColor(resource: .backgroundDay)
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(TrackerCellHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TrackerCellHeader.identifier)
@@ -94,7 +111,7 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         collectionView.dataSource = self
         collectionView.delegate = self
         
-        collectionView.reloadData()
+        applyFilter()
         updatePlaceholder()
         
         setupViews()
@@ -102,6 +119,27 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
     }
     
     //MARK: - Private methods
+    private func applyFilter() {
+        let allCategories = trackerProvider?.allCategories() ?? []
+
+        categories = allCategories.map { category in
+            let filteredTrackers = selectedFilter.filtered(
+                trackers: category.trackers,
+                completedTrackers: completedTrackers,
+                date: datePicker.date
+            )
+
+            return TrackerCategory(
+                title: category.title,
+                trackers: filteredTrackers
+            )
+        }
+
+        categories = categories.filter { !$0.trackers.isEmpty }
+
+        collectionView.reloadData()
+    }
+    
     private func setupViews() {
         view.addSubview(trackerLabel)
         view.addSubview(plusButton)
@@ -110,7 +148,9 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
         view.addSubview(starImage)
         view.addSubview(questionLabel)
         view.addSubview(collectionView)
+        view.addSubview(filterButton)
         plusButton.addTarget(self, action: #selector(didTapPlusButton), for: .touchUpInside)
+        filterButton.addTarget(self, action: #selector(switchFilterVC), for: .touchUpInside)
     }
     
     private func setupConstraints() {
@@ -145,18 +185,19 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
             collectionView.topAnchor.constraint(equalTo: searchField.bottomAnchor, constant: 10),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            //FilterButton
+            filterButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            filterButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            filterButton.heightAnchor.constraint(equalToConstant: 50),
+            filterButton.widthAnchor.constraint(equalToConstant: 114)
         ])
     }
     
     private func updatePlaceholder() {
-        let sectionsCount = trackerProvider?.numberOfSections ?? 0
-        var totalItems = 0
-        for section in 0..<sectionsCount {
-            totalItems += trackerProvider?.numberOfRowsInSection(section) ?? 0
-        }
+        let totalItems = categories.reduce(0) { $0 + $1.trackers.count }
         let isNoTrackers = totalItems == 0
-        
+
         starImage.isHidden = !isNoTrackers
         questionLabel.isHidden = !isNoTrackers
         collectionView.isHidden = isNoTrackers
@@ -178,15 +219,29 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
             print("Не удалось добавить трекер: \(error)")
         }
     }
+    
+    func chosenFilter(filter: TrackerFilter) {
+        selectedFilter = filter
+        applyFilter()
+        updatePlaceholder()
+    }
+
 
     //MARK: - Objc methods
+    @objc func switchFilterVC() {
+        let filterVC = FilterViewController()
+        filterVC.delegate = self
+        let navController = UINavigationController(rootViewController: filterVC)
+        present(navController, animated: true)
+    }
     @objc func datePickerValueChanged(_ sender: UIDatePicker) {
         let selectedDate = sender.date
         let dateformatter = DateFormatter()
         dateformatter.dateFormat = "dd.MM.yyyy"
         let formattedDate = dateformatter.string(from: selectedDate)
         print("Выбранная дата:\(formattedDate)")
-        collectionView.reloadData()
+        applyFilter()
+        updatePlaceholder()
     }
     
     @objc private func didTapPlusButton() {
@@ -200,11 +255,11 @@ final class TrackerViewController: UIViewController, CreateHabitViewDelegate {
 //MARK: - UICollectionViewDataSource
 extension TrackerViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        trackerProvider?.numberOfSections ?? 0
+        categories.count
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        trackerProvider?.numberOfRowsInSection(section) ?? 0
+        categories[section].trackers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -212,9 +267,7 @@ extension TrackerViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         
-        guard let tracker = trackerProvider?.object(at: indexPath) else {
-            return cell
-        }
+        let tracker = categories[indexPath.section].trackers[indexPath.item]
         
         let isCompleted = isTrackerCompletedToday(id: tracker.id)
         let completedDays = completedTrackers.filter { $0.trackerId == tracker.id }.count
@@ -249,7 +302,7 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
               let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TrackerCellHeader.identifier, for: indexPath) as? TrackerCellHeader else {
             return UICollectionReusableView()
         }
-        header.titleLabel.text = trackerProvider?.headerTitle(for: indexPath.section) ?? ""
+        header.titleLabel.text = categories[indexPath.section].title
         return header
     }
 }
@@ -257,12 +310,11 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
 //MARK: - TrackerCellDelegate
 extension TrackerViewController: TrackerCellDelegate {
     func trackerCellDidTapPlus(_ cell: TrackerCell) {
-        guard
-            let indexPath = collectionView.indexPath(for: cell),
-            let choosenTracker = trackerProvider?.object(at: indexPath) else {
+        guard let indexPath = collectionView.indexPath(for: cell) else {
             return
         }
-        
+
+        let choosenTracker = categories[indexPath.section].trackers[indexPath.item]
         let calendar = Calendar.current
         let currentDate = calendar.startOfDay(for: Date())
         let pickerDate = calendar.startOfDay(for: datePicker.date)
@@ -278,7 +330,8 @@ extension TrackerViewController: TrackerCellDelegate {
                 completedTrackers.append(record)
                 try trackerRecordStore.add(record)
             }
-            collectionView.reloadItems(at: [indexPath])
+            applyFilter()
+            updatePlaceholder()
         } catch {
             print("Ошибка обновления рекорда: \(error)")
         }
@@ -288,7 +341,7 @@ extension TrackerViewController: TrackerCellDelegate {
 // MARK: - TrackerProviderDelegate
 extension TrackerViewController: TrackerProviderDelegate {
     func didUpdate(_ update: TrackerStoreUpdate) {
-        collectionView.reloadData()
+        applyFilter()
         updatePlaceholder()
     }
 }

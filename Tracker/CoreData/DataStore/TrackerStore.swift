@@ -55,6 +55,23 @@ final class TrackerStore {
         )
     }
     
+    func fetchTracker() throws -> [Tracker] {
+        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        let trackers = try context.fetch(fetchRequest)
+        return try trackers.map { tracker in
+            guard
+                let trackerID = tracker.id,
+                let trackerName = tracker.name,
+                let trackerColor = tracker.color,
+                let trackerEmoji = tracker.emoji,
+                let trackerShedule = tracker.schedule as? [WeekDay]
+            else {
+                throw StoreError.decodingError
+            }
+            return Tracker(id: trackerID, name: trackerName, color: trackerColor, emoji: trackerEmoji, schedule: trackerShedule)
+        }
+    }
+    
     
     func addNewTracker(from tracker: Tracker, withCategory categoryTitle: String) throws -> TrackerCoreData {
         let trackerCoreData = TrackerCoreData(context: context)
