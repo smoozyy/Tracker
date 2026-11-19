@@ -86,6 +86,25 @@ final class CategoriesViewModel {
         
         onButtonStateChanged?(isEnabled)
     }
+    
+    func updateCategory(oldTitle: String, newTitle: String) {
+        let trimmedText = newTitle.trimmingCharacters(in: .whitespaces)
+        guard isValidCategoryName(trimmedText) else { return }
+
+        do {
+            try trackerCategoryStore.updateCategory(oldTitle: oldTitle, newTitle: trimmedText)
+        } catch {
+            print("Не удалось изменить категорию: \(error)")
+        }
+    }
+
+    func deleteCategory(title: String) {
+        do {
+            try trackerCategoryStore.deleteCategory(title: title)
+        } catch {
+            print("Не удалось удалить категорию: \(error)")
+        }
+    }
 }
 
     //MARK: - TrackerCategoryStoreDelegate

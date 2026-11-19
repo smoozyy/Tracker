@@ -22,6 +22,9 @@ protocol TrackerProviderProtocol {
     func headerTitle(for section: Int) -> String?
     func allTrackers() -> [Tracker]
     func allCategories() -> [TrackerCategory]
+    func updatePinStatus(for trackerID: UUID, isPinned: Bool) throws
+    func fetchTracker(with id: UUID) throws -> (tracker: Tracker, categoryTitle: String)
+    func updateTracker(_ tracker: Tracker, withCategory: String) throws
 }
 
 protocol TrackerProviderDelegate: AnyObject {
@@ -110,6 +113,18 @@ extension TrackerStoreProvider: TrackerProviderProtocol {
                 trackers: trackers
             )
         }
+    }
+    
+    func updatePinStatus(for trackerID: UUID, isPinned: Bool) throws {
+        try trackerStore.updatePinStatus(for: trackerID, isPinned: isPinned)
+    }
+    
+    func fetchTracker(with id: UUID) throws -> (tracker: Tracker, categoryTitle: String) {
+        try trackerStore.fetchTracker(with: id)
+    }
+    
+    func updateTracker(_ tracker: Tracker, withCategory category: String) throws {
+        try trackerStore.updateTracker(tracker, withCategory: category)
     }
 }
 

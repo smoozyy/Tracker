@@ -11,6 +11,10 @@ final class TrackerCell: UICollectionViewCell {
     //MARK: - Delegate
     weak var delegate: TrackerCellDelegate?
     //MARK: - UI-elements
+    var cardViewForPreview: UIView {
+        return cardView
+    }
+    
     private lazy var cardView: UIView = {
         let card = UIView()
         card.translatesAutoresizingMaskIntoConstraints = false

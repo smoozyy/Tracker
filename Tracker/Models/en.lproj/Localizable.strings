@@ -53,4 +53,11 @@
 "bestPeriod" = "The best period";
 "perfectDays" = "The perfect days";
 "averageValue" = "The average value";
+"unpin" = "Unpin";
+"pin" = "Pin";
+"editing" = "Edit";
+"delete" = "Delete";
+"sure" = "Are you sure for delete this tracker?";
+"cancel" = "Cancel";
+"dontNeed" = "Is this category really not needed?";
 
