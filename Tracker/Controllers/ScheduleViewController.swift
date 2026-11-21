@@ -23,8 +23,8 @@ final class ScheduleViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.textColor = UIColor(resource: .blackDay)
-        label.text = "Расписание"
+        label.textColor = UIColor(resource: .forText)
+        label.text = NSLocalizedString("titleLabel", comment: "Расписание")
         return label
         
     }()
@@ -35,7 +35,8 @@ final class ScheduleViewController: UIViewController {
         button.layer.cornerRadius = 16
         button.backgroundColor = UIColor(resource: .blackDay)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        button.setTitle("Готово", for: .normal)
+        button.setTitle(NSLocalizedString("scheduleCompleteButton", comment: "Кнопка подтверждения"), for: .normal)
+        button.setTitleColor(UIColor(resource: .forTextInButton), for: .normal)
         button.tintColor = UIColor(resource: .whiteDay)
         return button
     }()
@@ -108,15 +109,19 @@ extension ScheduleViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SheduleCell", for: indexPath)
         let switchView = UISwitch(frame: .zero)
+        switchView.backgroundColor = UIColor(resource: .switcher)
+        switchView.layer.cornerRadius = switchView.frame.height / 2
+        switchView.layer.masksToBounds = true
+        switchView.thumbTintColor = UIColor(resource: .ypWhite)
         switchView.isOn = false
-        switchView.onTintColor = .blue
+        switchView.onTintColor = UIColor(resource: .blueColorForFilterButton)
         switchView.tag = indexPath.row
         switchView.addTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
         
         cell.accessoryView = switchView
         let day = WeekDay.allCases[indexPath.row]
         cell.textLabel?.text = day.fullName
-        cell.backgroundColor = UIColor(resource: .backgroundDay)
+        cell.backgroundColor = UIColor(resource: .tableViewBackcolor)
         return cell
     }
 }

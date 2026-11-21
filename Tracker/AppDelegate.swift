@@ -1,5 +1,6 @@
 import UIKit
 import CoreData
+import AppMetricaCore
 
 @main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -9,8 +10,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let trackerStore = TrackerStore()
         return trackerStore
     }()
+
+
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        if let configuration = AppMetricaConfiguration(apiKey: "c0d21d5a-7a17-4bae-aa1c-1e6146245798") { 
+            AppMetrica.activate(with: configuration)
+        }
+
         DaysValueTransformer.register()
         return true
     }

@@ -15,16 +15,15 @@ final class TrackerCategoryCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 17, weight: .regular)
-        label.textColor = .blackDay
+        label.textColor = UIColor(resource: .forText)
         label.tintColor = .clear
         return label
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-
         contentView.addSubview(titleLabel)
-        self.backgroundColor = UIColor(resource: .backgroundDay)
+        self.backgroundColor = UIColor(resource: .tableViewBackcolor)
         selectionStyle = .none
 
         NSLayoutConstraint.activate([

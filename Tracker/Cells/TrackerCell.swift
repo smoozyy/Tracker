@@ -11,6 +11,10 @@ final class TrackerCell: UICollectionViewCell {
     //MARK: - Delegate
     weak var delegate: TrackerCellDelegate?
     //MARK: - UI-elements
+    var cardViewForPreview: UIView {
+        return cardView
+    }
+    
     private lazy var cardView: UIView = {
         let card = UIView()
         card.translatesAutoresizingMaskIntoConstraints = false
@@ -41,7 +45,7 @@ final class TrackerCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .medium)
-        label.textColor = UIColor(resource: .ypWhite)
+        label.textColor = UIColor(resource: .forText)
         label.numberOfLines = 2
         return label
     }()
@@ -51,14 +55,12 @@ final class TrackerCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = UIColor(resource: .blackDay)
-        label.text = "0 дней"
         return label
     }()
     
     private lazy var plusButton: UIButton = {
         let button = UIButton(type: .custom)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = UIColor(resource: .colorSection5)
         button.layer.cornerRadius = 17
         button.layer.masksToBounds = true
         button.tintColor = .whiteDay
@@ -125,9 +127,15 @@ final class TrackerCell: UICollectionViewCell {
     
     func configure(isCompleted: Bool, completedDays: Int, tracker: Tracker){
         cardView.backgroundColor = TrackerColor(rawValue: tracker.color)?.color
+        plusButton.backgroundColor = TrackerColor(rawValue: tracker.color)?.color
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.name
-        countLabel.text = completedDays.daysString()
+        let daysCount = completedDays
+        let daysString = String.localizedStringWithFormat(
+            NSLocalizedString("numberOfDays", comment: "Кол-во дней"),
+            daysCount
+        )
+        countLabel.text = daysString
         let image = isCompleted ? SystemImages.System.checkmark : SystemImages.System.plus
         let config = UIImage.SymbolConfiguration(pointSize: 11, weight: .bold)
         let configuredImage = UIImage(systemName: image, withConfiguration: config)

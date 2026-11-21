@@ -20,6 +20,11 @@ protocol TrackerProviderProtocol {
     func addTracker(_ tracker: Tracker, withCategory: String) throws
     func deleteTracker(at indexPath: IndexPath) throws
     func headerTitle(for section: Int) -> String?
+    func allTrackers() -> [Tracker]
+    func allCategories() -> [TrackerCategory]
+    func updatePinStatus(for trackerID: UUID, isPinned: Bool) throws
+    func fetchTracker(with id: UUID) throws -> (tracker: Tracker, categoryTitle: String)
+    func updateTracker(_ tracker: Tracker, withCategory: String) throws
 }
 
 protocol TrackerProviderDelegate: AnyObject {
@@ -38,7 +43,7 @@ final class TrackerStoreProvider: NSObject {
     //MARK: - FetchResultsController
     private lazy var fetchedResultsController: NSFetchedResultsController<TrackerCoreData> = {
         let fetchRequest = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
-            fetchRequest.sortDescriptors = [
+        fetchRequest.sortDescriptors = [
             NSSortDescriptor(key: "category.title", ascending: true),
             NSSortDescriptor(key: "name", ascending: true)
         ]
@@ -54,7 +59,7 @@ final class TrackerStoreProvider: NSObject {
         try? controller.performFetch()
         return controller
     }()
-
+    
     init(_ trackerStore: TrackerStore, delegate: TrackerProviderDelegate) throws {
         guard let context = trackerStore.managedObjectContext else {
             throw StoreError.failedToInitializeContext
@@ -73,7 +78,7 @@ extension TrackerStoreProvider: TrackerProviderProtocol {
     func headerTitle(for section: Int) -> String? {
         return fetchedResultsController.sections?[section].name
     }
-
+    
     func numberOfRowsInSection(_ section: Int) -> Int {
         fetchedResultsController.sections?[section].numberOfObjects ?? 0
     }
@@ -84,12 +89,42 @@ extension TrackerStoreProvider: TrackerProviderProtocol {
     }
     
     func addTracker(_ tracker: Tracker, withCategory category: String) throws {
-          try trackerStore.add(tracker, withCategory: category)
-      }
+        try trackerStore.add(tracker, withCategory: category)
+    }
     
     func deleteTracker(at indexPath: IndexPath) throws {
         let tracker = fetchedResultsController.object(at: indexPath)
         try trackerStore.delete(tracker)
+    }
+    
+    func allCategories() -> [TrackerCategory] {
+        guard let sections = fetchedResultsController.sections else {
+            return []
+        }
+        
+        return sections.enumerated().map { sectionIndex, section in
+            
+            let trackers = (0..<section.numberOfObjects).compactMap { row in
+                object(at: IndexPath(row: row, section: sectionIndex))
+            }
+            
+            return TrackerCategory(
+                title: section.name,
+                trackers: trackers
+            )
+        }
+    }
+    
+    func updatePinStatus(for trackerID: UUID, isPinned: Bool) throws {
+        try trackerStore.updatePinStatus(for: trackerID, isPinned: isPinned)
+    }
+    
+    func fetchTracker(with id: UUID) throws -> (tracker: Tracker, categoryTitle: String) {
+        try trackerStore.fetchTracker(with: id)
+    }
+    
+    func updateTracker(_ tracker: Tracker, withCategory category: String) throws {
+        try trackerStore.updateTracker(tracker, withCategory: category)
     }
 }
 
@@ -105,7 +140,7 @@ extension TrackerStoreProvider: NSFetchedResultsControllerDelegate {
             let deletedIndexes = self.deletedIndexes else {
             return
         }
-                
+        
         
         delegate?.didUpdate(TrackerStoreUpdate(
             insertedIndexes: insertedIndexes,
@@ -114,6 +149,16 @@ extension TrackerStoreProvider: NSFetchedResultsControllerDelegate {
         )
         self.insertedIndexes = nil
         self.deletedIndexes = nil
+    }
+    
+    func allTrackers() -> [Tracker] {
+        guard let objects = fetchedResultsController.fetchedObjects else {
+            return []
+        }
+        
+        return objects.compactMap {
+            try? trackerStore.makeTracker(from: $0)
+        }
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {

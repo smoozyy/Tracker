@@ -28,7 +28,6 @@ final class HabitCell: UICollectionViewCell {
     //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
         setUpViews()
         setUpConstraint()
     }

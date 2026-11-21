@@ -41,6 +41,7 @@ final class TrackerRecordStore {
         try context.save()
         return trackerRecordCoreData
     }
+    
     func fetchRecords() throws -> [TrackerRecord] {
         let request: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
         let recordsCD = try context.fetch(request)
